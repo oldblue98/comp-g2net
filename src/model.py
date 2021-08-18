@@ -87,7 +87,7 @@ class ImageModel(nn.Module):
                 nn.BatchNorm2d(self.n))
         self.block4 = nn.Sequential(
                 nn.Conv2d(self.n, 1, kernel_size=(7, 7), stride=(1, 1), padding=(3, 3), bias=False))
-        # self.fc = nn.Linear(nb_ft, self.n_classes)
+        self.fc = nn.Linear(nb_ft, self.n_classes)
 
         in_features = self.backbone.num_features
         print(f"{self.model_name}: {in_features}")
@@ -121,16 +121,17 @@ class ImageModel(nn.Module):
         # self.fc = nn.Linear(in_features, fc_dim)
         # self.fc_ = nn.Linear(fc_dim, n_classes)
         # self.bn = nn.BatchNorm1d(fc_dim)
-        # self._init_params()
+        self._init_params()
         # self.final = 
 
     def _init_params(self):
         nn.init.xavier_normal_(self.fc.weight)
         nn.init.constant_(self.fc.bias, 0)
-        nn.init.constant_(self.bn.weight, 1)
-        nn.init.constant_(self.bn.bias, 0)
+        # nn.init.constant_(self.bn.weight, 1)
+        # nn.init.constant_(self.bn.bias, 0)
 
     def forward(self, x):
+        x = self.resize_img(x)
         x = self.backbone(x)
         x = self.fc(x)
         return x
