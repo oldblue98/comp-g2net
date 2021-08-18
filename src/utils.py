@@ -21,7 +21,7 @@ def seed_everything(seed):
 def read_dataset():
     df = pd.read_csv('./data/input/training_labels.csv')
     #df_cu = cudf.DataFrame(df)
-    image_paths = "./data/input/train/" + df["id"].apply(lambda x:x[0]) + "/" + df["id"] + ".npy"
+    image_paths = df['id'].apply(get_train_file_path)
     #return df, df_cu, image_paths
     return df, image_paths
 
