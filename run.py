@@ -34,15 +34,6 @@ def main():
     options = parser.parse_args()
     config = json.load(open(options.config))
 
-    # log file
-    # now = datetime.datetime.now()
-    # logging.basicConfig(
-    #     filename='./logs/log_' + config["model_name"] + '_'+ '{0:%Y%m%d%H%M%S}.log'.format(now), level=logging.DEBUG
-    # )
-    # logging.debug('date : {0:%Y,%m/%d,%H:%M:%S}'.format(now))
-    # log_list = ["img_size", "train_bs", "monitor"]
-    # for log_c in log_list:
-    #     logging.debug(f"{log_c} : {config[log_c]}")
 
     from logging import getLogger, StreamHandler,FileHandler, Formatter, DEBUG, INFO
     logger = getLogger("logger")    #logger名loggerを取得
@@ -106,7 +97,7 @@ def main():
             shuffle=False,
             pin_memory=True,
         )
-
+        print(config.model_name)
         model = ImageModel(
             config,
             device
