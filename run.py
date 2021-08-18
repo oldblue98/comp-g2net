@@ -108,15 +108,9 @@ def main():
         )
 
         model = ImageModel(
-                1,
-                config["model_name"],
-                config["model_type"],
-                config["fc_dim"],
-                config["margin"],
-                config["scale"],
-                config["output_size"],
-                device
-            )
+            config,
+            device
+        )
 
         model.eval()
         model = model.to(device)

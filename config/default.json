@@ -6,6 +6,8 @@
     "img_size":512,
     "epochs": 10,
     "fc_dim": 512,
+    "n_classes":1,
+    "in_channels":1,
     "train_bs": 8,
     "valid_bs": 8,
     "valid_every": 5,

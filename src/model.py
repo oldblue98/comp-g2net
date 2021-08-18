@@ -29,75 +29,39 @@ logger.addHandler(handler_stream)
 
 from src.utils import *
 
-class ArcMarginProduct(nn.Module):
-    def __init__(self, in_features, out_features, device, scale=30.0, margin=0.50, easy_margin=False, ls_eps=0.0):
-        super(ArcMarginProduct, self).__init__()
-        self.in_features = in_features
-        self.out_features = out_features
-        self.device = device
-        self.scale = scale
-        self.margin = margin
-        self.ls_eps = ls_eps  # label smoothing
-        self.weight = nn.Parameter(torch.FloatTensor(out_features, in_features))
-        nn.init.xavier_uniform_(self.weight)
-
-        self.easy_margin = easy_margin
-        self.cos_m = math.cos(margin)
-        self.sin_m = math.sin(margin)
-        self.th = math.cos(math.pi - margin)
-        self.mm = math.sin(math.pi - margin) * margin
-
-    def forward(self, input, label):
-        # --------------------------- cos(theta) & phi(theta) ---------------------------
-        cosine = F.linear(F.normalize(input), F.normalize(self.weight))
-        sine = torch.sqrt(1.0 - torch.pow(cosine, 2))
-        phi = cosine * self.cos_m - sine * self.sin_m
-        if self.easy_margin:
-            phi = torch.where(cosine > 0, phi, cosine)
-        else:
-            phi = torch.where(cosine > self.th, phi, cosine - self.mm)
-        # --------------------------- convert label to one-hot ---------------------------
-        # one_hot = torch.zeros(cosine.size(), requires_grad=True, device='cuda')
-        one_hot = torch.zeros(cosine.size(), device=self.device)
-        # one_hot = torch.zeros(cosine.size())
-        one_hot.scatter_(1, label.view(-1, 1).long(), 1)
-        if self.ls_eps > 0:
-            one_hot = (1 - self.ls_eps) * one_hot + self.ls_eps / self.out_features
-        # -------------torch.where(out_i = {x_i if condition_i else y_i) -------------
-        output = (one_hot * phi) + ((1.0 - one_hot) * cosine)
-        output *= self.scale
-
-        return output
-
 class ImageModel(nn.Module):
-    def __init__(self, n_classes, model_name, model_type, fc_dim, margin, scale, output_size, device,
-                 use_fc=True, pretrained=True, training=True, in_channels : int=1):
+    def __init__(self, config, device,
+                 use_fc=True, pretrained=True, training=True):
 
         super(ImageModel,self).__init__()
-        print('Building Model Backbone for {} model'.format(model_name))
+        print('Building Model Backbone for {} model'.format(config.model_name))
         self.slope = .1
         self.n = 16
-        self.output_size = output_size
+        self.output_size = config.img_size
         self.r = 1
 
-        self.backbone = timm.create_model(model_name, pretrained=pretrained, in_chans=in_channels)
-        self.model_type = model_type
+        self.backbone = timm.create_model(config.model_name, pretrained=pretrained, in_chans=config.in_channels)
 
         if hasattr(self.backbone, "fc"):
             nb_ft = self.backbone.fc.in_features
-            self.backbone.fc = nn.Identity()
+            self.backbone.fc = nn.Linear(nb_ft, config.n_classes)
+
         elif hasattr(self.backbone, "_fc"):
             nb_ft = self.backbone._fc.in_features
-            self.backbone._fc = nn.Identity()
+            self.backbone._fc = nn.Linear(nb_ft, config.n_classes)
+
         elif hasattr(self.backbone, "classifier"):
             nb_ft = self.backbone.classifier.in_features
-            self.backbone.classifier = nn.Identity()
+            self.backbone.classifier = nn.Linear(nb_ft, config.n_classes)
+
         elif hasattr(self.backbone, "last_linear"):
             nb_ft = self.backbone.last_linear.in_features
-            self.backbone.last_linear = nn.Identity()
+            self.backbone.last_linear = nn.Linear(nb_ft, config.n_classes)
+
         elif hasattr(self.backbone, "head"):
             nb_ft = self.backbone.head.fc.in_features
-            self.backbone.head.fc = nn.Identity()
+            self.backbone.head.fc = nn.Linear(nb_ft, config.n_classes)
+
             # self.backbone.head.global_pool = nn.Identity()
 
         print("nb_ft : ", nb_ft)
@@ -118,10 +82,10 @@ class ImageModel(nn.Module):
                 nn.BatchNorm2d(self.n))
         self.block4 = nn.Sequential(
                 nn.Conv2d(self.n, 1, kernel_size=(7, 7), stride=(1, 1), padding=(3, 3), bias=False))
-        self.fc = nn.Linear(nb_ft, n_classes)
+        # self.fc = nn.Linear(nb_ft, config.n_classes)
 
         in_features = self.backbone.num_features
-        print(f"{model_name}: {in_features}, fc_dim :{fc_dim}")
+        print(f"{config.model_name}: {in_features}")
 
         # if model_type == 'res':
         #     final_in_features = self.backbone.fc.in_features
@@ -153,8 +117,6 @@ class ImageModel(nn.Module):
         # self.fc_ = nn.Linear(fc_dim, n_classes)
         # self.bn = nn.BatchNorm1d(fc_dim)
         # self._init_params()
-        final_in_features = fc_dim
-
         # self.final = 
 
     def _init_params(self):
@@ -164,6 +126,23 @@ class ImageModel(nn.Module):
         nn.init.constant_(self.bn.bias, 0)
 
     def forward(self, x):
+        x = self.backbone(x)
+        x = self.fc(x)
+        return x
+
+    def extract_feat(self, x):
+        batch_size = x.shape[0]
+        x = self.backbone(x)
+
+        # if self.model_type != 'vit':
+        #     x = self.pooling(x).view(batch_size, -1)
+        x = self.dropout(x)
+        x = self.fc(x)
+        x = self.bn(x)
+        x = self.fc_(x)
+        return x
+    
+    def resize_img(self, x):
         res1 = F.interpolate(x, size=(self.output_size, self.output_size), mode='bilinear')
         x = self.block1(x)
         res2 = F.interpolate(x, size=(self.output_size, self.output_size), mode='bilinear')
@@ -181,20 +160,6 @@ class ImageModel(nn.Module):
         
         x = self.block4(x)
         x += res1
-        x = self.backbone(x)
-        x = self.fc(x)
-        return x
-
-    def extract_feat(self, x):
-        batch_size = x.shape[0]
-        x = self.backbone(x)
-
-        # if self.model_type != 'vit':
-        #     x = self.pooling(x).view(batch_size, -1)
-        x = self.dropout(x)
-        x = self.fc(x)
-        x = self.bn(x)
-        x = self.fc_(x)
         return x
 
 def mixup_data(x, y, alpha=1.0, use_cuda=True):

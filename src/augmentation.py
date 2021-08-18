@@ -27,7 +27,7 @@ def get_inference_transforms(image_size):
 """
 def get_train_transforms(input_shape):
     return Compose([
-        Resize(input_shape, input_shape),
+        # Resize(input_shape, input_shape),
         HorizontalFlip(p=0.5),
         VerticalFlip(p=0.5),
         ShiftScaleRotate(p=0.5),
@@ -42,7 +42,7 @@ def get_train_transforms(input_shape):
 
 def get_valid_transforms(input_shape):
     return Compose([
-        Resize(input_shape, input_shape),
+        # Resize(input_shape, input_shape),
         Normalize(
         mean=[0.485],
         std=[0.229],

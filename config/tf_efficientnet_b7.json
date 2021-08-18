@@ -1,7 +1,7 @@
 {
     "fold_num": 5,
     "seed": 42,
-    "model_name": "tf_efficientnet_b5",
+    "model_name": "tf_efficientnet_b7",
     "model_type" : "eff",
     "img_size":512,
     "epochs": 10,

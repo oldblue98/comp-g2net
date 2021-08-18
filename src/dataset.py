@@ -5,6 +5,8 @@ from torch.utils.data import Dataset
 from src.augmentation import *
 from src.utils import *
 
+from nnAudio.Spectrogram import CQT1992v2
+
 
 class ImageDataset(Dataset):
     def __init__(self, train_df, transforms=None):
@@ -21,11 +23,18 @@ class ImageDataset(Dataset):
         target = self.labels[index]
 
         image = np.load(image_path)
-        image = np.vstack(image[::2, ...]).astype(float)
+        image = self.apply_qtransform(image)
         # image = cv2.resize(image, (image.shape[0]//2, image.shape[0]//2))
-        image = image.astype("f")[..., np.newaxis]
+        image = image.squeeze().numpy()
         if self.augmentations:
             augmented = self.augmentations(image=image)
             image = augmented['image']
 
         return image, torch.tensor(target)
+
+    def apply_qtransform(self, waves, transform=CQT1992v2(sr=2048, fmin=20, fmax=1024, hop_length=64)):
+        waves = np.hstack(waves)
+        waves = waves / np.max(waves)
+        waves = torch.from_numpy(waves).float()
+        image = transform(waves)
+        return image

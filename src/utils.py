@@ -19,7 +19,7 @@ def seed_everything(seed):
     torch.backends.cudnn.benchmark = True
 
 def read_dataset():
-    df = pd.read_csv('./data/input/train_labels.csv')
+    df = pd.read_csv('./data/input/training_labels.csv')
     #df_cu = cudf.DataFrame(df)
     image_paths = "./data/input/train/" + df["id"].apply(lambda x:x[0]) + "/" + df["id"] + ".npy"
     #return df, df_cu, image_paths
@@ -28,14 +28,18 @@ def read_dataset():
 def read_test_dataset():
     df = pd.read_csv('./data/input/sample_submission.csv')
     #df_cu = cudf.DataFrame(df)
-    image_paths = "./data/input/test/" + df["id"].apply(lambda x:x[0]) + "/" + df["id"] + ".npy"
+    image_paths = df['id'].apply(get_test_file_path)
     #return df, df_cu, image_paths
     return df, image_paths
 
-def getMetric(col):
-    def rocscore(row):
-        return roc_auc_score(row.target, row[col])
-    return rocscore
+def get_train_file_path(image_id):
+    return "./data/input/train/{}/{}/{}/{}.npy".format(
+        image_id[0], image_id[1], image_id[2], image_id)
+
+def get_test_file_path(image_id):
+    return "./data/input/test/{}/{}/{}/{}.npy".format(
+        image_id[0], image_id[1], image_id[2], image_id)
+
 
 def f1_score(y_true, y_pred):
     y_true = y_true.apply(lambda x: set(x.split()))
@@ -68,35 +72,3 @@ def row_wise_f1_score(labels, preds):
         scores.append(score)
     return scores, np.mean(scores)
 
-def find_threshold(df, lower_count_thresh, upper_count_thresh, search_space, FEAS):
-    '''
-    Compute the optimal threshold for the given count threshold.
-    '''
-    score_by_threshold = []
-    best_score = 0
-    best_threshold = -1
-    for i in tqdm(search_space):
-        sim_thresh = i/100
-        selection = ((FEAS@FEAS.T) > sim_thresh).cpu().numpy()
-        matches = []
-        oof = []
-        for row in selection:
-            oof.append(df.iloc[row].posting_id.tolist())
-            matches.append(' '.join(df.iloc[row].posting_id.tolist()))
-        tmp = df.groupby('label_group').posting_id.agg('unique').to_dict()
-        df['target'] = df.label_group.map(tmp)
-        scores, score = row_wise_f1_score(df.target, oof)
-        df['score'] = scores
-        df['oof'] = oof
-
-        selected_score = df.query(f'count > {lower_count_thresh} and count < {upper_count_thresh}').score.mean()
-        score_by_threshold.append(selected_score)
-        if selected_score > best_score:
-            best_score = selected_score
-            best_threshold = i
-
-    plt.title(f'Threshold Finder for count in [{lower_count_thresh},{upper_count_thresh}].')
-    plt.plot(score_by_threshold)
-    plt.axis('off')
-    plt.show()
-    print(f'Best score is {best_score} and best threshold is {best_threshold/100}')
