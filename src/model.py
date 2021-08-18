@@ -34,33 +34,38 @@ class ImageModel(nn.Module):
                  use_fc=True, pretrained=True, training=True):
 
         super(ImageModel,self).__init__()
-        print('Building Model Backbone for {} model'.format(config.model_name))
+        print('Building Model Backbone for {} model'.format(config["model_name"]))
         self.slope = .1
         self.n = 16
-        self.output_size = config.img_size
+        self.output_size = config["img_size"]
         self.r = 1
 
-        self.backbone = timm.create_model(config.model_name, pretrained=pretrained, in_chans=config.in_channels)
+        self.model_name = config["model_name"]
+        self.in_channels = config["in_channels"]
+        self.n_classes = config["n_classes"]
+
+
+        self.backbone = timm.create_model(self.model_name, pretrained=pretrained, in_chans=self.in_channels)
 
         if hasattr(self.backbone, "fc"):
             nb_ft = self.backbone.fc.in_features
-            self.backbone.fc = nn.Linear(nb_ft, config.n_classes)
+            self.backbone.fc = nn.Linear(nb_ft, self.n_classes)
 
         elif hasattr(self.backbone, "_fc"):
             nb_ft = self.backbone._fc.in_features
-            self.backbone._fc = nn.Linear(nb_ft, config.n_classes)
+            self.backbone._fc = nn.Linear(nb_ft, self.n_classes)
 
         elif hasattr(self.backbone, "classifier"):
             nb_ft = self.backbone.classifier.in_features
-            self.backbone.classifier = nn.Linear(nb_ft, config.n_classes)
+            self.backbone.classifier = nn.Linear(nb_ft, self.n_classes)
 
         elif hasattr(self.backbone, "last_linear"):
             nb_ft = self.backbone.last_linear.in_features
-            self.backbone.last_linear = nn.Linear(nb_ft, config.n_classes)
+            self.backbone.last_linear = nn.Linear(nb_ft, self.n_classes)
 
         elif hasattr(self.backbone, "head"):
             nb_ft = self.backbone.head.fc.in_features
-            self.backbone.head.fc = nn.Linear(nb_ft, config.n_classes)
+            self.backbone.head.fc = nn.Linear(nb_ft, self.n_classes)
 
             # self.backbone.head.global_pool = nn.Identity()
 
@@ -82,10 +87,10 @@ class ImageModel(nn.Module):
                 nn.BatchNorm2d(self.n))
         self.block4 = nn.Sequential(
                 nn.Conv2d(self.n, 1, kernel_size=(7, 7), stride=(1, 1), padding=(3, 3), bias=False))
-        # self.fc = nn.Linear(nb_ft, config.n_classes)
+        # self.fc = nn.Linear(nb_ft, self.n_classes)
 
         in_features = self.backbone.num_features
-        print(f"{config.model_name}: {in_features}")
+        print(f"{self.model_name}: {in_features}")
 
         # if model_type == 'res':
         #     final_in_features = self.backbone.fc.in_features

@@ -97,7 +97,7 @@ def main():
             shuffle=False,
             pin_memory=True,
         )
-        print(config.model_name)
+        
         model = ImageModel(
             config,
             device
