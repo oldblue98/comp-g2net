@@ -49,23 +49,23 @@ class ImageModel(nn.Module):
 
         if hasattr(self.backbone, "fc"):
             nb_ft = self.backbone.fc.in_features
-            self.backbone.fc = nn.Linear(nb_ft, self.n_classes)
+            self.backbone.fc = nn.Identity()
 
         elif hasattr(self.backbone, "_fc"):
             nb_ft = self.backbone._fc.in_features
-            self.backbone._fc = nn.Linear(nb_ft, self.n_classes)
+            self.backbone._fc = nn.Identity()
 
         elif hasattr(self.backbone, "classifier"):
             nb_ft = self.backbone.classifier.in_features
-            self.backbone.classifier = nn.Linear(nb_ft, self.n_classes)
+            self.backbone.classifier = nn.Identity()
 
         elif hasattr(self.backbone, "last_linear"):
             nb_ft = self.backbone.last_linear.in_features
-            self.backbone.last_linear = nn.Linear(nb_ft, self.n_classes)
+            self.backbone.last_linear = nn.Identity()
 
         elif hasattr(self.backbone, "head"):
             nb_ft = self.backbone.head.fc.in_features
-            self.backbone.head.fc = nn.Linear(nb_ft, self.n_classes)
+            self.backbone.head.fc = nn.Identity()
 
             # self.backbone.head.global_pool = nn.Identity()
 
@@ -87,7 +87,7 @@ class ImageModel(nn.Module):
                 nn.BatchNorm2d(self.n))
         self.block4 = nn.Sequential(
                 nn.Conv2d(self.n, 1, kernel_size=(7, 7), stride=(1, 1), padding=(3, 3), bias=False))
-        # self.fc = nn.Linear(nb_ft, self.n_classes)
+        self.fc = nn.Linear(nb_ft, self.n_classes)
 
         in_features = self.backbone.num_features
         print(f"{self.model_name}: {in_features}")
@@ -133,7 +133,7 @@ class ImageModel(nn.Module):
     def forward(self, x):
         x = self.resize_img(x)
         x = self.backbone(x)
-        # x = self.fc(x)
+        x = self.fc(x)
         return x
 
     def extract_feat(self, x):
