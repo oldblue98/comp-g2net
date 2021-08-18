@@ -189,7 +189,7 @@ def mixup_data(x, y, alpha=1.0, use_cuda=True):
 def mixup_criterion(criterion, pred, y_a, y_b, lam):
     return lam * criterion(pred, y_a) + (1 - lam) * criterion(pred, y_b)
 
-def train_func(train_loader, model, device, criterion, optimizer, debug=True, sam=False):
+def train_func(train_loader, model, device, criterion, optimizer, debug=True, sam=False, mixup=False):
     model.train()
     bar = tqdm(train_loader)
 
@@ -198,8 +198,9 @@ def train_func(train_loader, model, device, criterion, optimizer, debug=True, sa
     for batch_idx, (images, targets) in enumerate(bar):
         images, targets = images.to(device, dtype=torch.float), targets.to(device, dtype=torch.float)
         #images, targets = images.cuda(), targets.cuda()
-        images, targets_a, targets_b, lam = mixup_data(images, targets.view(-1, 1), use_cuda=True)
-        targets_a, targets_b = targets_a.to(device, dtype=torch.float), targets_a.to(device, dtype=torch.float)
+        if mixup:
+            images, targets_a, targets_b, lam = mixup_data(images, targets.view(-1, 1), use_cuda=True)
+            targets_a, targets_b = targets_a.to(device, dtype=torch.float), targets_a.to(device, dtype=torch.float)
 
         if debug and batch_idx == 10:
             print('Debug Mode. Only train on first 100 batches.')
@@ -209,18 +210,25 @@ def train_func(train_loader, model, device, criterion, optimizer, debug=True, sa
         if sam:
             logits = model(images)
             # targets = targets.view(-1, 1)
-
-            loss = mixup_criterion(criterion, logits, targets_a, targets_b, lam)
+            if mixup:
+                loss = mixup_criterion(criterion, logits, targets_a, targets_b, lam)
+            else:
+                loss = criterion(logits, targets.view(-1, 1))
             loss.backward()
             optimizer.first_step(zero_grad=True)
             logits = model(images)
-            loss = mixup_criterion(criterion, logits, targets_a, targets_b, lam)
+            if mixup:
+                loss = mixup_criterion(criterion, logits, targets_a, targets_b, lam)
+            else:
+                loss = criterion(logits, targets.view(-1, 1))
             loss.backward()
             optimizer.second_step(zero_grad=True)
         else:
             logits = model(images)
-            targets = targets.view(-1, 1)
-            loss = criterion(logits, targets)
+            if mixup:
+                loss = mixup_criterion(criterion, logits, targets_a, targets_b, lam)
+            else:
+                loss = criterion(logits, targets.view(-1, 1))
             loss.backward()
             optimizer.step()
             optimizer.zero_grad()
