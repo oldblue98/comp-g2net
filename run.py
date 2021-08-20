@@ -125,6 +125,7 @@ def main():
 
             print("train_loss : ", loss_train)
             print("valid_loss : ", loss_valid)
+            print("lr : ", optimizer.param_groups.lr)
 
             torch.save(model.state_dict(), f'save/{config["model_name"]}_epoch{epoch}_fold{fold}.pth')
 
