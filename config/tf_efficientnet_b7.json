@@ -3,18 +3,16 @@
     "seed": 42,
     "model_name": "tf_efficientnet_b7",
     "model_type" : "eff",
-    "img_size":512,
+    "img_size":256,
     "epochs": 10,
     "fc_dim": 512,
     "n_classes":1,
     "in_channels":1,
-    "train_bs": 24,
-    "valid_bs": 24,
+    "train_bs": 48,
+    "valid_bs": 48,
     "valid_every": 5,
     "margin":0.5,
     "scale":30,
-    "T_0": 10,
-    "lr": 3e-4,
     "min_lr": 3e-6,
     "weight_decay": 1e-4,
     "num_workers": 4,
@@ -33,5 +31,13 @@
         "lr_ramp_ep": 5,
         "lr_sus_ep": 0,
         "lr_decay": 0.8
+    },
+    "cosine_warmup_schedular_params" : {
+        "lr_start":1e-5,
+        "T_0": 10,
+        "T_mult": 32e-5,
+        "eta_max": 32e-5,
+        "T_up": 5,
+        "gamma": 0.5
     }
 }

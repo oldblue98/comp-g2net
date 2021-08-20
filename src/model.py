@@ -311,55 +311,6 @@ def get_image_embeddings(model, valid_loader, device):
 
     return image_embeddings
 
-def get_image_predictions(df, embeddings):
-
-    if len(df) > 3:
-        KNN = 50
-    else :
-        KNN = 3
-
-    model = NearestNeighbors(n_neighbors = KNN, metric = 'cosine')
-    model.fit(embeddings)
-    distances, indices = model.kneighbors(embeddings)
-
-    threshold_score = []
-
-    for th in tqdm(range(30, 60)):
-        predictions = []
-        th_ = th/100
-
-        for k in range(embeddings.shape[0]):
-            idx = np.where(distances[k,] < th_)[0]
-            ids = indices[k,idx]
-            posting_ids = df['posting_id'].iloc[ids].values
-            predictions.append(posting_ids)
-
-        df["oof"] = predictions
-        df['auc'] = df.apply(getMetric('oof'),axis=1)
-        threshold_score.append(df.auc.mean())
-
-    threshold_score = np.array(threshold_score)
-    best_threshold = np.argmax(threshold_score)
-    print("cv score : ", threshold_score.mean())
-    print("best threshold : ", best_threshold/100+0.3)
-    print("high score : ", threshold_score[best_threshold])
-
-    """
-    predictions = []
-    th_ = best_threshold/100 + 0.3
-
-    for k in range(embeddings.shape[0]):
-        idx = np.where(distances[k,] < th_)[0]
-        ids = indices[k,idx]
-        posting_ids = df['posting_id'].iloc[ids].values
-        predictions.append(posting_ids)
-
-    del model, distances, indices
-    gc.collect()
-    """
-
-    return threshold_score.mean(), best_threshold/100+0.3, threshold_score[best_threshold]
-
 class MyScheduler(_LRScheduler):
     def __init__(self, optimizer, lr_start=5e-6, lr_max=1e-5,
                  lr_min=1e-6, lr_ramp_ep=5, lr_sus_ep=0, lr_decay=0.8,
@@ -403,3 +354,58 @@ class MyScheduler(_LRScheduler):
                   (self.last_epoch - self.lr_ramp_ep - self.lr_sus_ep) +
                   self.lr_min)
         return lr
+
+class CosineAnnealingWarmUpRestarts(_LRScheduler):
+    def __init__(self, optimizer, T_0, T_mult=1, eta_max=0.1, T_up=0, gamma=1., last_epoch=-1):
+        if T_0 <= 0 or not isinstance(T_0, int):
+            raise ValueError("Expected positive integer T_0, but got {}".format(T_0))
+        if T_mult < 1 or not isinstance(T_mult, int):
+            raise ValueError("Expected integer T_mult >= 1, but got {}".format(T_mult))
+        if T_up < 0 or not isinstance(T_up, int):
+            raise ValueError("Expected positive integer T_up, but got {}".format(T_up))
+        self.T_0 = T_0
+        self.T_mult = T_mult
+        self.base_eta_max = eta_max
+        self.eta_max = eta_max
+        self.T_up = T_up
+        self.T_i = T_0
+        self.gamma = gamma
+        self.cycle = 0
+        super(CosineAnnealingWarmUpRestarts, self).__init__(optimizer, last_epoch)
+        self.T_cur = last_epoch
+    
+    def get_lr(self):
+        if self.T_cur == -1:
+            return self.base_lrs
+        elif self.T_cur < self.T_up:
+            return [(self.eta_max - base_lr)*self.T_cur / self.T_up + base_lr for base_lr in self.base_lrs]
+        else:
+            return [base_lr + (self.eta_max - base_lr) * (1 + math.cos(math.pi * (self.T_cur-self.T_up) / (self.T_i - self.T_up))) / 2
+                    for base_lr in self.base_lrs]
+
+    def step(self, epoch=None):
+        if epoch is None:
+            epoch = self.last_epoch + 1
+            self.T_cur = self.T_cur + 1
+            if self.T_cur >= self.T_i:
+                self.cycle += 1
+                self.T_cur = self.T_cur - self.T_i
+                self.T_i = (self.T_i - self.T_up) * self.T_mult + self.T_up
+        else:
+            if epoch >= self.T_0:
+                if self.T_mult == 1:
+                    self.T_cur = epoch % self.T_0
+                    self.cycle = epoch // self.T_0
+                else:
+                    n = int(math.log((epoch / self.T_0 * (self.T_mult - 1) + 1), self.T_mult))
+                    self.cycle = n
+                    self.T_cur = epoch - self.T_0 * (self.T_mult ** n - 1) / (self.T_mult - 1)
+                    self.T_i = self.T_0 * self.T_mult ** (n)
+            else:
+                self.T_i = self.T_0
+                self.T_cur = epoch
+                
+        self.eta_max = self.base_eta_max * (self.gamma**self.cycle)
+        self.last_epoch = math.floor(epoch)
+        for param_group, lr in zip(self.optimizer.param_groups, self.get_lr()):
+            param_group['lr'] = lr

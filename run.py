@@ -97,7 +97,7 @@ def main():
             shuffle=False,
             pin_memory=True,
         )
-        
+
         model = ImageModel(
             config,
             device
@@ -109,7 +109,9 @@ def main():
         # optimizer = torch.optim.Adam(model.parameters(), lr=config['schedular_params']['lr_start'], weight_decay=config['weight_decay'])
         base_optimizer = torch.optim.Adam
         optimizer = SAM(model.parameters(), base_optimizer, lr=config['schedular_params']['lr_start'], weight_decay=config['weight_decay'])
-        scheduler = MyScheduler(optimizer, **config["schedular_params"])
+        # scheduler = MyScheduler(optimizer, **config["schedular_params"])
+        scheduler = CosineAnnealingWarmUpRestarts(optimizer, **config["cosine_warmup_schedular_params"])
+
         #er = EarlyStopping(config['patience'])
 
         loss_tr = nn.BCEWithLogitsLoss().to(device)
@@ -117,7 +119,7 @@ def main():
 
         for epoch in range(config["epochs"]):
             scheduler.step()
-            loss_train = train_func(train_loader, model, device, loss_tr, optimizer, debug=config["debug"], sam=True)
+            loss_train = train_func(train_loader, model, device, loss_tr, optimizer, debug=config["debug"], sam=True, mixup=config["mixup"])
             loss_valid, accuracy = valid_func(valid_loader, model, device, loss_tr)
             logging.debug(f"{epoch}epoch : loss_train > {loss_train} looss_valid > {loss_valid}")
 
