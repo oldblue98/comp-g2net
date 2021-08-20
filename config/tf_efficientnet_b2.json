@@ -1,5 +1,5 @@
 {
-    "fold_num": 5,
+    "fold_num": 2,
     "seed": 42,
     "model_name": "tf_efficientnet_b2",
     "image_type":"spatial",
