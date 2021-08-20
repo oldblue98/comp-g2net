@@ -119,14 +119,14 @@ def main():
 
         for epoch in range(config["epochs"]):
             scheduler.step()
-            print("before train lr : ", optimizer.param_groups.lr)
+            print("before train lr : ", optimizer.param_groups["lr"])
             loss_train = train_func(train_loader, model, device, loss_tr, optimizer, debug=config["debug"], sam=True, mixup=config["mixup"])
             loss_valid, accuracy = valid_func(valid_loader, model, device, loss_tr)
             logging.debug(f"{epoch}epoch : loss_train > {loss_train} looss_valid > {loss_valid}")
 
             print("train_loss : ", loss_train)
             print("valid_loss : ", loss_valid)
-            print("after train lr : ", optimizer.param_groups.lr)
+            print("after train lr : ", optimizer.param_groups["lr"])
 
             torch.save(model.state_dict(), f'save/{config["model_name"]}_epoch{epoch}_fold{fold}.pth')
 
