@@ -356,7 +356,11 @@ class MyScheduler(_LRScheduler):
         return lr
 
 class CosineAnnealingWarmUpRestarts(_LRScheduler):
-    def __init__(self, optimizer, T_0, T_mult=1, eta_max=0.1, T_up=0, gamma=1., last_epoch=-1):
+    '''
+    T_0 : 初期の繰りかえし回数
+    T_mult : サイクルのスケール倍率
+    '''
+    def __init__(self, optimizer, T_0, T_mult=1, eta_max=0.1, eta_min=1e-3, T_up=0, gamma=1., last_epoch=-1):
         if T_0 <= 0 or not isinstance(T_0, int):
             raise ValueError("Expected positive integer T_0, but got {}".format(T_0))
         if T_mult < 1 or not isinstance(T_mult, int):
@@ -373,6 +377,7 @@ class CosineAnnealingWarmUpRestarts(_LRScheduler):
         self.cycle = 0
         self.T_cur = last_epoch
         super(CosineAnnealingWarmUpRestarts, self).__init__(optimizer, last_epoch)
+        self.base_lrs = [eta_min]
     
     def get_lr(self):
         if self.T_cur == -1:
