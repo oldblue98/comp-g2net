@@ -33,7 +33,6 @@
         "lr_decay": 0.8
     },
     "cosine_warmup_schedular_params" : {
-        "lr_start":1e-5,
         "T_0": 10,
         "T_mult": 32e-5,
         "eta_max": 32e-5,
