@@ -34,7 +34,7 @@
     },
     "cosine_warmup_schedular_params" : {
         "T_0": 10,
-        "T_mult": 32e-5,
+        "T_mult": 1,
         "eta_max": 32e-5,
         "T_up": 5,
         "gamma": 0.5
