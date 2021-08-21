@@ -26,7 +26,7 @@
     "debug" : 0,
     "augmentation":{
         "img_size":70,
-        "resize":1,
+        "resize":0,
         "norm":1
     },
     "schedular_params" : {
