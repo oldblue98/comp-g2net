@@ -131,7 +131,7 @@ class ImageModel(nn.Module):
         # nn.init.constant_(self.bn.bias, 0)
 
     def forward(self, x):
-        x = self.resize_img(x)
+        # x = self.resize_img(x)
         x = self.backbone(x)
         x = self.fc(x)
         return x
