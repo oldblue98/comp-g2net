@@ -24,6 +24,11 @@
     "patience" : 2,
     "mode" : "min",
     "debug" : 0,
+    "augmentation":{
+        "img_size":70,
+        "resize":1,
+        "norm":1
+    },
     "schedular_params" : {
         "lr_start": 1e-5,
         "lr_max": 32e-5,
@@ -35,7 +40,7 @@
     "cosine_warmup_schedular_params" : {
         "T_0": 10,
         "T_mult": 1,
-        "eta_max": 32e-5,
+        "eta_max": 1e-4,
         "eta_min": 1e-6,
         "T_up": 3,
         "gamma": 0.5
