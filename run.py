@@ -79,8 +79,8 @@ def main():
         train_ = train_df.loc[trn_idx,:].reset_index(drop=True)
         valid_ = train_df.loc[val_idx,:].reset_index(drop=True)
 
-        train_ds = ImageDataset(train_, transforms=get_train_transforms(config["img_size"]))
-        valid_ds = ImageDataset(valid_, transforms=get_valid_transforms(config["img_size"]))
+        train_ds = ImageDataset(train_, transforms=get_train_transforms(config["augmentation"]))
+        valid_ds = ImageDataset(valid_, transforms=get_valid_transforms(config["augmentation"]))
 
         train_loader = torch.utils.data.DataLoader(
             train_ds,

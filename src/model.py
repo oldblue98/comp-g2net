@@ -87,6 +87,7 @@ class ImageModel(nn.Module):
                 nn.BatchNorm2d(self.n))
         self.block4 = nn.Sequential(
                 nn.Conv2d(self.n, 1, kernel_size=(7, 7), stride=(1, 1), padding=(3, 3), bias=False))
+                
         self.fc = nn.Linear(nb_ft, self.n_classes)
 
         in_features = self.backbone.num_features
