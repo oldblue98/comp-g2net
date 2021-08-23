@@ -112,6 +112,8 @@ def main():
             elif config["optimizer"] == "SAM":
                 base_optimizer = torch.optim.Adam
                 optimizer = SAM(model.parameters(), base_optimizer, lr=config['lr'], weight_decay=config['weight_decay'])
+            else:
+                raise Exception('optimizer is not defined!')
             return optimizer
 
         def get_scheduler(optimizer):
@@ -119,6 +121,8 @@ def main():
                 scheduler = CosineAnnealingLR(optimizer, last_epoch=-1, **config["CosineAnnealingLR"])
             elif config["scheduler"]=='CosineAnnealingWarmRestarts':
                 scheduler = scheduler = CosineAnnealingWarmUpRestarts(optimizer, last_epoch=-1, **config["CosineAnnealingWarmRestarts"])
+            else:
+                raise Exception('scheduler is not defined!')
             return scheduler
 
         optimizer = get_optimizer()
