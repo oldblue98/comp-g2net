@@ -1,8 +1,8 @@
 {
     "fold_num": 2,
     "seed": 42,
-    "model_name": "CosineAnnealingWarmRestarts",
-    "scheduler": "CosineAnnealingLR",
+    "model_name": "tf_efficientnet_b0_ns",
+    "scheduler": "CosineAnnealingWarmRestarts",
     "optimizer": "SAM",
     "image_type":"spatial",
     "mixup":0,
