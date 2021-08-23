@@ -11,6 +11,8 @@ from torch import nn
 #import cudf
 
 import sys
+
+from torch.nn.modules import loss
 sys.path.append('sam/')
 from sam import SAM
 
@@ -133,15 +135,24 @@ def main():
         loss_tr = nn.BCEWithLogitsLoss().to(device)
         loss_vl = nn.BCEWithLogitsLoss().to(device)
 
+        best_score = 0.
+        best_loss = np.inf
         for epoch in range(config["epochs"]):
-            print("before train lr : ", scheduler.get_lr()[0])
+            logger.debug("train lr : ", scheduler.get_lr()[0])
             loss_train = train_func(train_loader, model, device, loss_tr, optimizer, debug=config["debug"], sam=config["optimizer"] == "SAM", mixup=config["mixup"])
             loss_valid, accuracy = valid_func(valid_loader, model, device, loss_tr)
             logger.debug(f"{epoch}epoch : loss_train > {loss_train} loss_valid > {loss_valid} auc > {accuracy}")
-            logger.debug(f"after train lr : {scheduler.get_lr()[0]}")
             scheduler.step()
+            
+            if accuracy > best_score:
+                best_score = accuracy
+                logger.debug(f"Epoch {epoch+1} - Save Best Score: {best_score:.4f} Model")
+                torch.save(model.state_dict(), f'save/{config["model_name"]}_epoch{epoch}_fold{fold}_best_score.pth')
 
-            torch.save(model.state_dict(), f'save/{config["model_name"]}_epoch{epoch}_fold{fold}.pth')
+            if loss_valid < best_loss:
+                best_loss = loss_valid
+                logger.debug(f"Epoch {epoch+1} - Save Best loss: {best_loss:.4f} Model")
+                torch.save(model.state_dict(), f'save/{config["model_name"]}_epoch{epoch}_fold{fold}_best_loss.pth')
 
         del model, train_loader, valid_loader, optimizer, scheduler
 
