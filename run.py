@@ -138,11 +138,11 @@ def main():
         best_score = 0.
         best_loss = np.inf
         for epoch in range(config["epochs"]):
-            logger.debug("train lr : ", scheduler.get_lr()[0])
             loss_train = train_func(train_loader, model, device, loss_tr, optimizer, debug=config["debug"], sam=config["optimizer"] == "SAM", mixup=config["mixup"])
             loss_valid, accuracy = valid_func(valid_loader, model, device, loss_tr, debug=config["debug"])
             logger.debug(f"{epoch}epoch : loss_train > {loss_train} loss_valid > {loss_valid} auc > {accuracy}")
             scheduler.step()
+            logger.debug("after train lr : ", scheduler.get_lr()[0])
             
             if accuracy > best_score:
                 best_score = accuracy
