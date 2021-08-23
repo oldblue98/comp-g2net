@@ -26,7 +26,7 @@ def get_inference_transforms(image_size):
     ])
 """
 def get_train_transforms(config):
-    if config["resize"]:
+    if config["augmentation"]["resize"]:
         return Compose([
             Resize(config["img_size"], config["img_size"]),
             HorizontalFlip(p=0.5),

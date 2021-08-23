@@ -43,6 +43,7 @@ class ImageModel(nn.Module):
         self.model_name = config["model_name"]
         self.in_channels = config["in_channels"]
         self.n_classes = config["n_classes"]
+        self.learn_resize = config["learn_resize"]
 
 
         self.backbone = timm.create_model(self.model_name, pretrained=pretrained, in_chans=self.in_channels)
@@ -132,7 +133,8 @@ class ImageModel(nn.Module):
         # nn.init.constant_(self.bn.bias, 0)
 
     def forward(self, x):
-        # x = self.resize_img(x)
+        if self.learn_resize:
+            x = self.resize_img(x)
         x = self.backbone(x)
         x = self.fc(x)
         return x
