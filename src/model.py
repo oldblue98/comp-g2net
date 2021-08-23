@@ -205,8 +205,8 @@ def train_func(train_loader, model, device, criterion, optimizer, debug=True, sa
             images, targets_a, targets_b, lam = mixup_data(images, targets.view(-1, 1), use_cuda=True)
             targets_a, targets_b = targets_a.to(device, dtype=torch.float), targets_a.to(device, dtype=torch.float)
 
-        if debug and batch_idx == 10:
-            print('Debug Mode. Only train on first 10 batches.')
+        if debug and batch_idx == 100:
+            print('Debug Mode. Only train on first 100 batches.')
             break
 
         # SAM
@@ -245,7 +245,7 @@ def train_func(train_loader, model, device, criterion, optimizer, debug=True, sa
     loss_train = np.mean(losses)
     return loss_train
 
-def valid_func(train_loader, model, device, criterion):
+def valid_func(train_loader, model, device, criterion, debug=True):
     #model.eval()
     bar = tqdm(train_loader)
 
@@ -256,6 +256,9 @@ def valid_func(train_loader, model, device, criterion):
         for batch_idx, (images, targets) in enumerate(bar):
             images, targets = images.to(device, dtype=torch.float), targets.to(device, dtype=torch.float)
             #images, targets = images.cuda(), targets.cuda()
+            if debug and batch_idx == 100:
+                print('Debug Mode. Only train on first 100 batches.')
+                break
 
             logits = model(images)
 
