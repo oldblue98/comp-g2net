@@ -5,7 +5,7 @@
     "scheduler": "CosineAnnealingLR",
     "optimizer": "Adam",
     "image_type":"spatial",
-    "mixup":1,
+    "mixup":0,
     "img_size":70,
     "epochs": 10,
     "fc_dim": 512,

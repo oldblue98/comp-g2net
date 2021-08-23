@@ -134,12 +134,12 @@ def main():
         loss_vl = nn.BCEWithLogitsLoss().to(device)
 
         for epoch in range(config["epochs"]):
-            scheduler.step()
             print("before train lr : ", scheduler.get_lr()[0])
             loss_train = train_func(train_loader, model, device, loss_tr, optimizer, debug=config["debug"], sam=config["optimizer"] == "SAM", mixup=config["mixup"])
             loss_valid, accuracy = valid_func(valid_loader, model, device, loss_tr)
-            logging.debug(f"{epoch}epoch : loss_train > {loss_train} loss_valid > {loss_valid} auc > {accuracy}")
-            logging.debug(f"after train lr : {scheduler.get_lr()[0]}")
+            logger.debug(f"{epoch}epoch : loss_train > {loss_train} loss_valid > {loss_valid} auc > {accuracy}")
+            logger.debug(f"after train lr : {scheduler.get_lr()[0]}")
+            scheduler.step()
 
             torch.save(model.state_dict(), f'save/{config["model_name"]}_epoch{epoch}_fold{fold}.pth')
 
