@@ -56,7 +56,7 @@ def get_train_transforms(config):
         ], p=1.)
 
 def get_valid_transforms(config):
-    if config["resize"]:
+    if config["augmentation"]["resize"]:
         return Compose([
             Resize(config["img_size"], config["img_size"]),
             Normalize(
@@ -76,7 +76,7 @@ def get_valid_transforms(config):
         ], p=1.)
 
 def get_inference_transforms(config):
-    if config["resize"]:
+    if config["augmentation"]["resize"]:
         return Compose([
             Resize(config["img_size"], config["img_size"]),
             Normalize(
