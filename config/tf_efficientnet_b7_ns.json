@@ -3,6 +3,7 @@
     "seed": 42,
     "model_name": "tf_efficientnet_b7_ns",
     "scheduler": "CosineAnnealingLR",
+    "optimizer": "Admm",
     "image_type":"spatial",
     "mixup":1,
     "img_size":70,
