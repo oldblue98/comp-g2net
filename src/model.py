@@ -259,7 +259,11 @@ def valid_func(train_loader, model, device, criterion):
 
             logits = model(images)
 
-            PREDS += [torch.argmax(logits, 1).detach().cpu()]
+            # 多クラス分類
+            # PREDS += [torch.argmax(logits, 1).detach().cpu()]
+
+            # ２値分類
+            PREDS += [logits.detach().cpu()]
             TARGETS += [targets.detach().cpu()]
 
             targets = torch.unsqueeze(targets, 1).type_as(logits)
