@@ -25,7 +25,6 @@
     "monitor" : "val_loss",
     "patience" : 2,
     "mode" : "min",
-    "debug" : 0,
     "augmentation":{
         "img_size":70,
         "resize":0,
