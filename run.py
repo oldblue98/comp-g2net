@@ -106,11 +106,23 @@ def main():
         model.eval()
         model = model.to(device)
 
-        # optimizer = torch.optim.Adam(model.parameters(), lr=config['schedular_params']['lr_start'], weight_decay=config['weight_decay'])
-        base_optimizer = torch.optim.Adam
-        optimizer = SAM(model.parameters(), base_optimizer, lr=config['schedular_params']['lr_start'], weight_decay=config['weight_decay'])
-        # scheduler = MyScheduler(optimizer, **config["schedular_params"])
-        scheduler = CosineAnnealingWarmUpRestarts(optimizer, **config["cosine_warmup_schedular_params"])
+        def get_optimizer():
+            if config["optimizer"] =="Adam":
+                optimizer = torch.optim.Adam(model.parameters(), lr=config['lr'], weight_decay=config['weight_decay'])
+            elif config["optimizer"] == "SAM":
+                base_optimizer = torch.optim.Adam
+                optimizer = SAM(model.parameters(), base_optimizer, lr=config['lr'], weight_decay=config['weight_decay'])
+            return optimizer
+
+        def get_scheduler(optimizer):
+            if config["scheduler"]=='CosineAnnealingLR':
+                scheduler = CosineAnnealingLR(optimizer, last_epoch=-1, **config["CosineAnnealingLR"])
+            elif config["scheduler"]=='CosineAnnealingWarmRestarts':
+                scheduler = scheduler = CosineAnnealingWarmUpRestarts(optimizer, last_epoch=-1, **config["CosineAnnealingWarmRestarts"])
+            return scheduler
+
+        optimizer = get_optimizer()
+        scheduler = get_scheduler(optimizer)
 
         #er = EarlyStopping(config['patience'])
 
@@ -122,7 +134,7 @@ def main():
             print("before train lr : ", scheduler.get_lr()[0])
             loss_train = train_func(train_loader, model, device, loss_tr, optimizer, debug=config["debug"], sam=True, mixup=config["mixup"])
             loss_valid, accuracy = valid_func(valid_loader, model, device, loss_tr)
-            logging.debug(f"{epoch}epoch : loss_train > {loss_train} looss_valid > {loss_valid}")
+            logging.debug(f"{epoch}epoch : loss_train > {loss_train} loss_valid > {loss_valid} auc > {accuracy}")
             logging.debug(f"after train lr : {scheduler.get_lr()[0]}")
 
             torch.save(model.state_dict(), f'save/{config["model_name"]}_epoch{epoch}_fold{fold}.pth')
