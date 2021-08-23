@@ -6,7 +6,7 @@
     "optimizer": "SAM",
     "image_type":"spatial",
     "mixup":0,
-    "learn_resize":1,
+    "learn_resize":0,
     "img_size":70,
     "epochs": 10,
     "fc_dim": 512,
