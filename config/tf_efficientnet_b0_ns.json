@@ -26,6 +26,7 @@
     "monitor" : "val_loss",
     "patience" : 2,
     "mode" : "min",
+    "debug":0,
     "augmentation":{
         "resize":0,
         "norm":1

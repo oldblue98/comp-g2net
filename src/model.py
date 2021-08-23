@@ -206,7 +206,7 @@ def train_func(train_loader, model, device, criterion, optimizer, debug=True, sa
             targets_a, targets_b = targets_a.to(device, dtype=torch.float), targets_a.to(device, dtype=torch.float)
 
         if debug and batch_idx == 10:
-            print('Debug Mode. Only train on first 100 batches.')
+            print('Debug Mode. Only train on first 10 batches.')
             break
 
         # SAM
