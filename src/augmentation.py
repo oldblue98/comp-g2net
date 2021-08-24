@@ -29,9 +29,9 @@ def get_train_transforms(config):
     if config["augmentation"]["resize"]:
         return Compose([
             Resize(config["img_size"], config["img_size"]),
-            HorizontalFlip(p=0.5),
-            VerticalFlip(p=0.5),
-            ShiftScaleRotate(p=0.5),
+            # HorizontalFlip(p=0.5),
+            # VerticalFlip(p=0.5),
+            # ShiftScaleRotate(p=0.5),
             # MotionBlur(p=.2),
             # IAASharpen(p=.25),
             # Normalize(
@@ -43,9 +43,7 @@ def get_train_transforms(config):
     else:
         return Compose([
             # Resize(config["img_size"], config["img_size"]),
-            HorizontalFlip(p=0.5),
-            VerticalFlip(p=0.5),
-            ShiftScaleRotate(p=0.5),
+            # HorizontalFlip(p=0.5), 
             # MotionBlur(p=.2),
             # IAASharpen(p=.25),
             # Normalize(
@@ -59,10 +57,10 @@ def get_valid_transforms(config):
     if config["augmentation"]["resize"]:
         return Compose([
             Resize(config["img_size"], config["img_size"]),
-            Normalize(
-            mean=[0.485],
-            std=[0.229],
-        ),
+        #     Normalize(
+        #     mean=[0.485],
+        #     std=[0.229],
+        # ),
             ToTensorV2(p=1.0),
         ], p=1.)
     else:
@@ -79,10 +77,10 @@ def get_inference_transforms(config):
     if config["augmentation"]["resize"]:
         return Compose([
             Resize(config["img_size"], config["img_size"]),
-            Normalize(
-            mean=[0.485],
-            std=[0.229],
-        ),
+        #     Normalize(
+        #     mean=[0.485],
+        #     std=[0.229],
+        # ),
             ToTensorV2(p=1.0),
         ], p=1.)
     else:
