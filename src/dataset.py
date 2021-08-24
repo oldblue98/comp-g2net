@@ -45,7 +45,7 @@ class ImageDataset(Dataset):
             image = image.squeeze().numpy()
         elif image_type == "channel":
             image = np.concatenate([transform(torch.from_numpy(waves[i]/np.max(waves)).float()) for i in range(len(waves))], axis=0)
-            # image = image.transpose(1, 2, 0)
+            image = image.transpose(1, 2, 0)
         else:
             raise Exception("image_type is not defined")
         return image
