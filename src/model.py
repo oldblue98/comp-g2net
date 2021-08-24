@@ -140,6 +140,7 @@ class ImageModel(nn.Module):
         if self.learn_resize:
             x = self.resize_img(x)
         x = self.backbone(x)
+        print(x.shape)
         x = self.fc(x)
         return x
 
