@@ -65,8 +65,12 @@ class ImageModel(nn.Module):
             self.backbone.last_linear = nn.Identity()
 
         elif hasattr(self.backbone, "head"):
-            nb_ft = self.backbone.head.fc.in_features
-            self.backbone.head.fc = nn.Identity()
+            if hasattr(self.backbone, "fc"):
+                nb_ft = self.backbone.head.fc.in_features
+                self.backbone.head.fc = nn.Identity()
+            else:
+                nb_ft = self.backbone.head.in_features
+                self.backbone.head.fc = nn.Identity()
 
             # self.backbone.head.global_pool = nn.Identity()
 
