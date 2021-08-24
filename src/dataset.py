@@ -29,7 +29,6 @@ class ImageDataset(Dataset):
         image = np.load(image_path)
         image = self.apply_qtransform(image, self.image_type)
         # image = cv2.resize(image, (image.shape[0]//2, image.shape[0]//2))
-        image = image.squeeze().numpy()
         if self.augmentations:
             augmented = self.augmentations(image=image)
             image = augmented['image']
@@ -42,6 +41,7 @@ class ImageDataset(Dataset):
             waves = waves / np.max(waves)
             waves = torch.from_numpy(waves).float()
             image = transform(waves)
+            image = image.squeeze().numpy()
         elif image_type == "channel":
             image = np.concatenate([transform(torch.from_numpy(waves[i]/np.max(waves)).float()) for i in range(len(waves))], axis=0)
             # image = image.transpose(1, 2, 0)
