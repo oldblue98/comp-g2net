@@ -70,7 +70,7 @@ class ImageModel(nn.Module):
                 self.backbone.head.fc = nn.Identity()
             else:
                 nb_ft = self.backbone.head.in_features
-                self.backbone.head.fc = nn.Identity()
+                self.backbone.head = nn.Identity()
 
             # self.backbone.head.global_pool = nn.Identity()
 
@@ -140,7 +140,7 @@ class ImageModel(nn.Module):
         if self.learn_resize:
             x = self.resize_img(x)
         x = self.backbone(x)
-        print(x.shape)
+        # print(x.shape)
         x = self.fc(x)
         return x
 
