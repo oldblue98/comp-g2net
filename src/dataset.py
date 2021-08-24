@@ -28,11 +28,12 @@ class ImageDataset(Dataset):
 
         image = np.load(image_path)
         image = self.apply_qtransform(image, self.image_type)
+        print("before",image.shape)
         # image = cv2.resize(image, (image.shape[0]//2, image.shape[0]//2))
         if self.augmentations:
             augmented = self.augmentations(image=image)
             image = augmented['image']
-
+        print("after",image.shape)
         return image, torch.tensor(target)
 
     def apply_qtransform(self, waves, image_type, transform=CQT1992v2(sr=2048, fmin=20, fmax=1024, hop_length=64)):
