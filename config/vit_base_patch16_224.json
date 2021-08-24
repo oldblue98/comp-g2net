@@ -6,7 +6,7 @@
     "optimizer": "Adam",
     "image_type":"spatial",
     "mixup":0,
-    "learn_resize":0,
+    "learn_resize":1,
     "img_size":224,
     "epochs": 10,
     "fc_dim": 512,
