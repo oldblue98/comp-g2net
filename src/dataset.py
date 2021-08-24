@@ -27,7 +27,8 @@ class ImageDataset(Dataset):
         target = self.labels[index]
 
         image = np.load(image_path)
-        image = self.apply_qtransform(image, self.image_type)
+        image = self.apply_qtransform(image, self.
+        )
         # image = cv2.resize(image, (image.shape[0]//2, image.shape[0]//2))
         image = image.squeeze().numpy()
         if self.augmentations:
@@ -37,9 +38,7 @@ class ImageDataset(Dataset):
         return image, torch.tensor(target)
 
     def apply_qtransform(self, waves, image_type, transform=CQT1992v2(sr=2048, fmin=20, fmax=1024, hop_length=64)):
-        print(f"image_type : {image_type}")
         if image_type == "spatial":
-            print("spatial")
             waves = np.hstack(waves)
             waves = waves / np.max(waves)
             waves = torch.from_numpy(waves).float()
@@ -48,7 +47,6 @@ class ImageDataset(Dataset):
             print(f"waves.shape : {waves.shape}")
             image = np.concatenate([transform(torch.from_numpy(waves[i]/np.max(waves)).float()) for i in range(len(waves))], axis=0)
             # image = image.transpose(1, 2, 0)
-            print(f"image.shape : {image.shape}")
         else:
             raise Exception("image_type is not defined")
         return image
