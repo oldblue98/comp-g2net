@@ -37,7 +37,9 @@ class ImageDataset(Dataset):
         return image, torch.tensor(target)
 
     def apply_qtransform(self, waves, image_type, transform=CQT1992v2(sr=2048, fmin=20, fmax=1024, hop_length=64)):
+        print(f"image_type : {image_type}")
         if image_type == "spatial":
+            print("spatial")
             waves = np.hstack(waves)
             waves = waves / np.max(waves)
             waves = torch.from_numpy(waves).float()
