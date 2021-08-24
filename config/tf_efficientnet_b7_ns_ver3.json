@@ -7,7 +7,7 @@
     "image_type":"channel",
     "mixup":0,
     "learn_resize":0,
-    "img_size":70,
+    "img_size":71,
     "epochs": 10,
     "fc_dim": 512,
     "n_classes":1,
