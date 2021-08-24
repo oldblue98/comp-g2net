@@ -11,7 +11,7 @@
     "epochs": 10,
     "fc_dim": 512,
     "n_classes":1,
-    "in_channels":1,
+    "in_channels":3,
     "train_bs": 48,
     "valid_bs": 48,
     "valid_every": 5,
