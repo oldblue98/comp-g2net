@@ -81,8 +81,8 @@ def main():
         train_ = train_df.loc[trn_idx,:].reset_index(drop=True)
         valid_ = train_df.loc[val_idx,:].reset_index(drop=True)
 
-        train_ds = ImageDataset(train_, config.qtransform_params, transforms=get_train_transforms(config), image_type=config["image_type"])
-        valid_ds = ImageDataset(valid_, config.qtransform_params, transforms=get_valid_transforms(config), image_type=config["image_type"])
+        train_ds = ImageDataset(train_, config["qtransform_params"], transforms=get_train_transforms(config), image_type=config["image_type"])
+        valid_ds = ImageDataset(valid_, config["qtransform_params"], transforms=get_valid_transforms(config), image_type=config["image_type"])
 
         train_loader = torch.utils.data.DataLoader(
             train_ds,
