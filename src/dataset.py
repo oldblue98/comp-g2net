@@ -18,7 +18,7 @@ class ImageDataset(Dataset):
         self.labels = train_df["label"].values
         self.augmentations = transforms
         self.image_type = image_type
-        self.qtransform = qtransform
+        self.transform = CQT1992v2(**qtransform)
 
     def __len__(self):
         return len(self.image_paths)
@@ -38,7 +38,7 @@ class ImageDataset(Dataset):
         return image, torch.tensor(target)
 
     def apply_qtransform(self, waves, image_type):
-        transform=CQT1992v2(**self.qtransform)
+        transform = self.transform
         if image_type == "spatial":
             waves = np.hstack(waves)
             waves = waves / np.max(waves)
