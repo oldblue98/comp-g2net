@@ -12,12 +12,13 @@ from nnAudio.Spectrogram import CQT1992v2
 
 
 class ImageDataset(Dataset):
-    def __init__(self, train_df, transforms=None, image_type="spatial"):
+    def __init__(self, train_df, qtransform, transforms=None, image_type="spatial"):
 
         self.image_paths = train_df["image_path"].values
         self.labels = train_df["label"].values
         self.augmentations = transforms
         self.image_type = image_type
+        self.qtransform = qtransform
 
     def __len__(self):
         return len(self.image_paths)
@@ -36,7 +37,8 @@ class ImageDataset(Dataset):
         # print("after",image.shape)
         return image, torch.tensor(target)
 
-    def apply_qtransform(self, waves, image_type, transform=CQT1992v2(sr=2048, fmin=20, fmax=1024, hop_length=64)):
+    def apply_qtransform(self, waves, image_type):
+        transform=CQT1992v2(self.qtransform)
         if image_type == "spatial":
             waves = np.hstack(waves)
             waves = waves / np.max(waves)

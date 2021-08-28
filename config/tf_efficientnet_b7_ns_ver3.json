@@ -5,6 +5,9 @@
     "scheduler": "CosineAnnealingWarmRestarts",
     "optimizer": "Adam",
     "image_type":"channel",
+    "qtransform_params":{
+        "sr": 2048, "fmin": 20, "fmax": 1024, "hop_length": 64
+    },
     "mixup":0,
     "learn_resize":0,
     "img_size":70,

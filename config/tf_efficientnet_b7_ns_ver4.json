@@ -1,14 +1,17 @@
 {
-    "fold_num": 5,
+    "fold_num": 2,
     "seed": 42,
     "model_name": "tf_efficientnet_b7_ns",
     "scheduler": "CosineAnnealingWarmRestarts",
     "optimizer": "Adam",
     "image_type":"spatial",
+    "qtransform_params":{
+        "sr": 2048, "fmin": 20, "fmax": 1024, "hop_length": 32, "bins_per_octave": 8
+    },
     "mixup":0,
     "learn_resize":0,
     "img_size":70,
-    "epochs": 5,
+    "epochs": 7,
     "fc_dim": 512,
     "n_classes":1,
     "in_channels":1,
@@ -34,8 +37,8 @@
     "CosineAnnealingWarmRestarts" : {
         "T_0": 5,
         "T_mult": 1,
-        "eta_max": 5e-5,
-        "eta_min": 5e-7,
+        "eta_max": 1e-5,
+        "eta_min": 1e-7,
         "T_up": 2,
         "gamma": 0.5
     },
