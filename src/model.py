@@ -251,7 +251,7 @@ def train_func(train_loader, model, device, criterion, optimizer, debug=True, sa
     return loss_train
 
 def valid_func(train_loader, model, device, criterion, debug=True):
-    #model.eval()
+    model.eval()
     bar = tqdm(train_loader)
 
     TARGETS = []
