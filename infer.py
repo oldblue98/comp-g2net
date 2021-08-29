@@ -93,15 +93,9 @@ def main():
 
         print(f'inference type {best_type} start')
         model = ImageModel(
-                    1,
-                    config["model_name"],
-                    config["model_type"],
-                    config["fc_dim"],
-                    config["margin"],
-                    config["scale"],
-                    device,
-                    training=False
-                )
+            config,
+            device
+        )
 
         model.eval()
 
@@ -121,7 +115,7 @@ def main():
             if fold > 0 and options.debug: # 時間がかかるので最初のモデルのみ
                 break
             
-            model.load_state_dict(torch.load(f'save/{config["model_name"]}_fold{fold}_{best_type}.pth'))
+            model.load_state_dict(torch.load(f'save/{config_filename}_fold{fold}_{best_type}.pth'))
             model = model.to(device)
 
             valid_ = train_df.loc[val_idx,:].reset_index(drop=True)

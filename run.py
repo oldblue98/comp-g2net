@@ -147,12 +147,12 @@ def main():
             if accuracy > best_score:
                 best_score = accuracy
                 logger.debug(f"Epoch {epoch+1} - Save Best Score: {best_score:.4f} Model")
-                torch.save(model.state_dict(), f'save/{config["model_name"]}_epoch{epoch}_fold{fold}_best_score.pth')
+                torch.save(model.state_dict(), f'save/{config_filename}_fold{fold}_best_score.pth')
 
             if loss_valid < best_loss:
                 best_loss = loss_valid
                 logger.debug(f"Epoch {epoch+1} - Save Best loss: {best_loss:.4f} Model")
-                torch.save(model.state_dict(), f'save/{config["model_name"]}_epoch{epoch}_fold{fold}_best_loss.pth')
+                torch.save(model.state_dict(), f'save/{config_filename}_fold{fold}_best_loss.pth')
 
         del model, train_loader, valid_loader, optimizer, scheduler
 
