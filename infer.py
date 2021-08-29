@@ -65,11 +65,11 @@ def main():
 
     train_df["image_path"] = image_paths
     train_df["label"] = df["target"]
-    train_df["id"] = df["id"]
+    # train_df["id"] = df["id"]
 
     test_df["image_path"] = test_paths
     test_df["label"] = df_test["target"]
-    test_df["id"] = df_test["id"]
+    # test_df["id"] = df_test["id"]
 
     del df
 
@@ -79,11 +79,17 @@ def main():
     # modelの作成
     seed_everything(config['seed'])
     device = torch.device(config['device'])
-    n_used_epoch = 2
+    # n_used_epoch = 2
+    cols = ["oof", "oof_best_score", "oof_best_loss", "label"]
+    oof_df = pd.DataFrame(index=[i for i in range(train_df.shape[0])], columns=cols)
+    # oof_df["id"] = train_df.id
+    oof_df["label"] = train_df.label
+    oof_df["oof"] = 0
+    print(oof_df.shape)
 
-    for epoch in range(config["epochs"]-n_used_epoch, config["epochs"]):
+    for best_type in ["best_score", "best_loss"]:
 
-        print(f'inference epoch{epoch} start')
+        print(f'inference type {best_type} start')
         model = ImageModel(
                     1,
                     config["model_name"],
@@ -108,18 +114,12 @@ def main():
         test_preds = []
         val_preds = []
         valid_index = []
-        cols = ["id", "oof", "label"]
-        oof_df = pd.DataFrame(index=[i for i in range(train_df.shape[0])],columns=cols)
-        oof_df["id"] = train_df.id
-        oof_df["label"] = train_df.label
-        oof_df["oof"] = 0
-        print(oof_df.shape)
 
         for fold, (trn_idx, val_idx) in enumerate(folds):
             if fold > 0 and options.debug: # 時間がかかるので最初のモデルのみ
                 break
             
-            model.load_state_dict(torch.load(f'save/{config["model_name"]}_epoch{epoch}_fold{fold}.pth'))
+            model.load_state_dict(torch.load(f'save/{config["model_name"]}_fold{fold}_{best_type}.pth'))
             model = model.to(device)
 
             valid_ = train_df.loc[val_idx,:].reset_index(drop=True)
@@ -155,8 +155,9 @@ def main():
         valid_index = np.concatenate(valid_index)
         order = np.argsort(valid_index)
         oof_df["oof"] += val_preds[order]
-        score = roc_auc_score(oof_df.label, oof_df.oof)
-        logging.debug(f"{epoch} epoch")
+        oof_df[f"oof_{best_type}"] = val_preds[order]
+        score = roc_auc_score(oof_df.label, oof_df[f"oof_{best_type}"])
+        logging.debug(f" type : {best_type}")
         logging.debug(f" CV_score : {score}")
         # logging.debug(f" scores : {scores.mean()}")
 
@@ -166,10 +167,16 @@ def main():
     sub = pd.read_csv("./data/input/sample_submission.csv")
     sub["target"] = np.mean(test_preds, axis=0)
     sub.to_csv(f"./data/output/{config_filename}.csv", index=False)
+    sub["target"] = np.mean(test_preds[:fold], axis=0)
+    sub.to_csv(f"./data/output/{config_filename}_best_score.csv", index=False)
+    sub["target"] = np.mean(test_preds[fold:], axis=0)
+    sub.to_csv(f"./data/output/{config_filename}_best_loss.csv", index=False)
 
     # oof
-    oof_df["oof"] /= n_used_epoch
-    oof_df.to_csv(f"./data/output/{config_filename}_oof.csv", index=False)
+    oof_df["oof"] /= 2
+    oof_df.loc[:, ["oof", "label"]].to_csv(f"./data/output/{config_filename}_oof.csv", index=False)
+    oof_df.loc[:, ["oof_best_score", "label"]].to_csv(f"./data/output/{config_filename}_oof_best_score.csv", index=False)
+    oof_df.loc[:, ["oof_best_loss", "label"]].to_csv(f"./data/output/{config_filename}_oof_best_loss.csv", index=False)
 
 if __name__ == '__main__':
     main()
