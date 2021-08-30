@@ -120,8 +120,8 @@ def main():
 
             valid_ = train_df.loc[val_idx,:].reset_index(drop=True)
 
-            valid_ds = ImageDataset(valid_, transforms=get_valid_transforms(config["img_size"]))
-            test_ds = ImageDataset(test_df, transforms=get_valid_transforms(config["img_size"]))
+            valid_ds = ImageDataset(valid_, config["qtransform_params"], transforms=get_valid_transforms(config), image_type=config["image_type"])
+            test_ds = ImageDataset(test_df, config["qtransform_params"], transforms=get_valid_transforms(config), image_type=config["image_type"])
 
             valid_loader = torch.utils.data.DataLoader(
                 valid_ds,
