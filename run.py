@@ -56,9 +56,18 @@ def main():
     # train 用 df の作成
     train_df = pd.DataFrame()
     df, image_paths = read_dataset()
+
     train_df["label"] = df["target"]
     train_df["image_path"] = image_paths
 
+    if config.pseudo is not None:
+        df, image_paths = read_pseudo_dataset(config.pseudo)
+        pseudo_df = pd.DataFrame()
+        pseudo_df["label"] = df["target"]
+        pseudo_df["image_path"] = image_paths
+        pseudo_df = pseudo_df[(pseudo_df.label > 0.9) | (pseudo_df.label < 0.1)]
+
+        train_df = pd.concat([train_df, pseudo_df], axis=0).reset_index(drop=True)
     # le = LabelEncoder()
     # train_df.label = le.fit_transform(train_df.label)
 

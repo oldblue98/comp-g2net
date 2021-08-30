@@ -32,6 +32,13 @@ def read_test_dataset():
     #return df, df_cu, image_paths
     return df, image_paths
 
+def read_pseudo_dataset(path):
+    df = pd.read_csv(path)
+    #df_cu = cudf.DataFrame(df)
+    image_paths = df['id'].apply(get_test_file_path)
+    #return df, df_cu, image_paths
+    return df, image_paths
+
 def get_train_file_path(image_id):
     return "./data/input/train/{}/{}/{}/{}.npy".format(
         image_id[0], image_id[1], image_id[2], image_id)
