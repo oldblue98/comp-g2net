@@ -10,6 +10,7 @@
     },
     "mixup":0,
     "learn_resize":1,
+    "pseudo":"None",
     "img_size":256,
     "epochs": 7,
     "fc_dim": 512,
