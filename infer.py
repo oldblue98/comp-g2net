@@ -152,8 +152,8 @@ def main():
         order = np.argsort(valid_index)
         oof_df[f"oof_{best_type}"] = val_preds[order]
         score = roc_auc_score(oof_df.label, oof_df[f"oof_{best_type}"])
-        logging.debug(f" type : {best_type}")
-        logging.debug(f" CV_score : {score}")
+        logger.debug(f" type : {best_type}")
+        logger.debug(f" CV_score : {score}")
         # logging.debug(f" scores : {scores.mean()}")
 
     del valid_loader, valid_predictions
