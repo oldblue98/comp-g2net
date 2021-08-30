@@ -150,7 +150,6 @@ def main():
         val_preds = np.concatenate(val_preds)
         valid_index = np.concatenate(valid_index)
         order = np.argsort(valid_index)
-        oof_df["oof"] += val_preds[order]
         oof_df[f"oof_{best_type}"] = val_preds[order]
         score = roc_auc_score(oof_df.label, oof_df[f"oof_{best_type}"])
         logging.debug(f" type : {best_type}")
@@ -169,7 +168,7 @@ def main():
     sub.to_csv(f"./data/output/{config_filename}_best_loss.csv", index=False)
 
     # oof
-    oof_df["oof"] /= 2
+    oof_df["oof"] = (oof_df["oof_best_score"] + oof_df["oof_best_loss"]) / 2
     oof_df.loc[:, ["oof", "label"]].to_csv(f"./data/output/{config_filename}_oof.csv", index=False)
     oof_df.loc[:, ["oof_best_score", "label"]].to_csv(f"./data/output/{config_filename}_oof_best_score.csv", index=False)
     oof_df.loc[:, ["oof_best_loss", "label"]].to_csv(f"./data/output/{config_filename}_oof_best_loss.csv", index=False)
