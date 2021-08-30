@@ -302,7 +302,7 @@ def get_prediction(model, valid_loader, device):
             preds.append(image_prediction)
     image_predictions = np.concatenate(preds)
     image_predictions = np.array(image_predictions)
-    image_predictions = sig(torch.from_numpy(image_predictions))
+    # image_predictions = sig(torch.from_numpy(image_predictions))
     return image_predictions
 
 def get_image_embeddings(model, valid_loader, device):
