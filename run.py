@@ -60,7 +60,7 @@ def main():
     train_df["label"] = df["target"]
     train_df["image_path"] = image_paths
 
-    if config["pseudo"] is not "None":
+    if config["pseudo"] != "None":
         df, image_paths = read_pseudo_dataset(config["pseudo"])
         pseudo_df = pd.DataFrame()
         pseudo_df["label"] = df["target"]
