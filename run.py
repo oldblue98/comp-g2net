@@ -82,7 +82,7 @@ def main():
                 n_splits=config['fold_num'],
                 shuffle=True,
                 random_state=config['seed']
-                ).split(np.arange(train_df.shape[0]), train_df.label.values)
+                ).split(np.arange(train_df.shape[0]), train_df.apply(lambda x: x.label > 1).values)
 
     for fold, (trn_idx, val_idx) in enumerate(folds):
         if fold > 0 and options.debug: # 時間がかかるので最初のモデルのみ
