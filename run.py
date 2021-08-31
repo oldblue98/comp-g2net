@@ -153,7 +153,7 @@ def main():
             logger.debug(f"lr : {scheduler.get_lr()[0]}")
             loss_train = train_func(train_loader, model, device, loss_tr, optimizer, debug=config["debug"], sam=config["optimizer"] == "SAM", mixup=config["mixup"])
             loss_valid, accuracy = valid_func(valid_loader, model, device, loss_tr, debug=config["debug"])
-            logger.debug(f"{epoch}epoch : loss_train > {loss_train} loss_valid > {loss_valid} auc > {accuracy}")
+            logger.debug(f"{epoch+1}epoch : loss_train > {loss_train} loss_valid > {loss_valid} auc > {accuracy}")
             scheduler.step()
             
             if accuracy > best_score:
