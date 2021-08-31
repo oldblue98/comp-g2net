@@ -150,6 +150,7 @@ def main():
     for metric in ["lgb", "logistic", "mean", "linear"]:
         test_preds = []
         val_preds = []
+        valid_index = []
 
         if metric == "lgb":
             model = LightGBM(params)
@@ -168,13 +169,14 @@ def main():
             # 結果を保存
             test_preds.append(y_pred_test)
             val_preds.append(y_pred_valid)
+            valid_index.append(val_idx)
 
             print(f'val_preds,shape : {np.shape(val_preds)}, y_pred_valid : {y_pred_valid.shape}')
             # print(f'X_valid[:5] : {X_valid[-50:-1]}, y_pred_valid[:5] : {y_pred_valid[-50:-1]}')
             # print(f'y_valid,label : {y_valid.value_counts("label")}, y_pred_valid.label : {np.argmax(y_pred_valid, axis=1).sum()}')
             # print(f'y_pred_valid.argmax : {np.argmax(y_pred_valid, axis=1)}')
         val_preds = np.concatenate(val_preds)
-        valid_index = np.concatenate(val_idx)
+        valid_index = np.concatenate(valid_index)
         order = np.argsort(valid_index)
         val_preds = val_preds[order]
         test_preds = np.mean(test_preds, axis=0)
