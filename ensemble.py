@@ -19,7 +19,7 @@ parser.add_argument('--fold_num', default=2)
 parser.add_argument('--seed', default=42)
 
 # parser.add_argument('--metric', default='mean')
-parser.add_argument('--ensemble_name', default='b2vit')
+parser.add_argument('ensemble_name', type=str)
 
 options = parser.parse_args()
 CFG = json.load(open(options.config))
