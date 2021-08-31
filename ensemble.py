@@ -201,7 +201,7 @@ def main():
 
         # 予測結果を保存
         sub = pd.read_csv("./data/input/sample_submission.csv")
-        sub['label'] = test_preds
+        sub['target'] = test_preds
         # logger.debug(sub.value_counts("label"))
         sub.to_csv(f'data/output/sub_ensemble_{ensemble_name}_{metric}.csv', index=False)
         oof_df.iloc[:, 0] = val_preds
