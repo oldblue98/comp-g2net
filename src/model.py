@@ -176,7 +176,7 @@ class ImageModel(nn.Module):
         x += res1
         return x
 
-def mixup_data(x, y, alpha=1.0, use_cuda=True):
+def mixup_data(x, y, device, alpha=1.0):
     '''Returns mixed inputs, pairs of targets, and lambda'''
     if alpha > 0:
         lam = np.random.beta(alpha, alpha)
@@ -184,8 +184,8 @@ def mixup_data(x, y, alpha=1.0, use_cuda=True):
         lam = 1
 
     batch_size = x.size()[0]
-    if use_cuda:
-        index = torch.randperm(batch_size).cuda()
+    if device:
+        index = torch.randperm(batch_size).to(device)
     else:
         index = torch.randperm(batch_size)
 
@@ -207,7 +207,7 @@ def train_func(train_loader, model, device, criterion, optimizer, debug=True, sa
         images, targets = images.to(device, dtype=torch.float), targets.to(device, dtype=torch.float)
         #images, targets = images.cuda(), targets.cuda()
         if mixup:
-            images, targets_a, targets_b, lam = mixup_data(images, targets.view(-1, 1), use_cuda=True)
+            images, targets_a, targets_b, lam = mixup_data(images, targets.view(-1, 1), device, use_cuda=True)
             targets_a, targets_b = targets_a.to(device, dtype=torch.float), targets_a.to(device, dtype=torch.float)
 
         if debug and batch_idx == 100:
