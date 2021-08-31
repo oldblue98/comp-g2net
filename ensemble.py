@@ -170,7 +170,7 @@ def main():
             test_preds.append(y_pred_test)
             val_preds.append(y_pred_valid)
 
-            print(f'y_valid,shape : {y_valid.shape}, y_pred_valid : {y_pred_valid.shape}')
+            print(f'val_preds,shape : {val_preds.shape}, y_pred_valid : {y_pred_valid.shape}')
             # print(f'X_valid[:5] : {X_valid[-50:-1]}, y_pred_valid[:5] : {y_pred_valid[-50:-1]}')
             # print(f'y_valid,label : {y_valid.value_counts("label")}, y_pred_valid.label : {np.argmax(y_pred_valid, axis=1).sum()}')
             # print(f'y_pred_valid.argmax : {np.argmax(y_pred_valid, axis=1)}')
