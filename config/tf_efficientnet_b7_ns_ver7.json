@@ -11,6 +11,8 @@
     "mixup":0,
     "learn_resize":0,
     "pseudo":"./data/output/tf_efficientnet_b7_ns_ver3.csv",
+    "drop_rate":0.5,
+    "drop_path_rate":0.2,
     "img_size":256,
     "epochs": 3,
     "fc_dim": 512,

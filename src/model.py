@@ -46,7 +46,13 @@ class ImageModel(nn.Module):
         self.learn_resize = config["learn_resize"]
 
 
-        self.backbone = timm.create_model(self.model_name, pretrained=pretrained, in_chans=self.in_channels)
+        self.backbone = timm.create_model(
+            self.model_name, 
+            pretrained=pretrained, 
+            in_chans=self.in_channels, 
+            drop_rate=config["drop_rate"], 
+            drop_path_rate=config["drop_path_rate"]
+        )
 
         if hasattr(self.backbone, "fc"):
             nb_ft = self.backbone.fc.in_features
@@ -75,26 +81,26 @@ class ImageModel(nn.Module):
             # self.backbone.head.global_pool = nn.Identity()
 
         print("nb_ft : ", nb_ft)
-        self.block1 = nn.Sequential(
-                nn.Conv2d(1, self.n, kernel_size=(7, 7), stride=(1,1), padding=(1, 1), bias=False),
-                nn.LeakyReLU(negative_slope=self.slope),
-                nn.Conv2d(self.n, self.n, kernel_size=(1, 1), stride=(1,1), padding=(1, 1), bias=False),
-                nn.LeakyReLU(negative_slope=self.slope),
-                nn.BatchNorm2d(self.n))
-        self.block2 = nn.Sequential(
-                nn.Conv2d(self.n, self.n, kernel_size=(3, 3), stride=(1,1), padding=(1, 1), bias=False),
-                nn.BatchNorm2d(self.n),
-                nn.LeakyReLU(negative_slope=self.slope),
-                nn.Conv2d(self.n, self.n, kernel_size=(3, 3), stride=(1,1), padding=(1, 1), bias=False),
-                nn.BatchNorm2d(self.n))
-        self.block3 = nn.Sequential(
-                nn.Conv2d(self.n, self.n, kernel_size=(3, 3), stride=(1,1), padding=(1, 1), bias=False),
-                nn.BatchNorm2d(self.n))
-        self.block4 = nn.Sequential(
-                nn.Conv2d(self.n, 1, kernel_size=(7, 7), stride=(1, 1), padding=(3, 3), bias=False))
-                
+        if config["learn_resize"]:
+            self.block1 = nn.Sequential(
+                    nn.Conv2d(1, self.n, kernel_size=(7, 7), stride=(1,1), padding=(1, 1), bias=False),
+                    nn.LeakyReLU(negative_slope=self.slope),
+                    nn.Conv2d(self.n, self.n, kernel_size=(1, 1), stride=(1,1), padding=(1, 1), bias=False),
+                    nn.LeakyReLU(negative_slope=self.slope),
+                    nn.BatchNorm2d(self.n))
+            self.block2 = nn.Sequential(
+                    nn.Conv2d(self.n, self.n, kernel_size=(3, 3), stride=(1,1), padding=(1, 1), bias=False),
+                    nn.BatchNorm2d(self.n),
+                    nn.LeakyReLU(negative_slope=self.slope),
+                    nn.Conv2d(self.n, self.n, kernel_size=(3, 3), stride=(1,1), padding=(1, 1), bias=False),
+                    nn.BatchNorm2d(self.n))
+            self.block3 = nn.Sequential(
+                    nn.Conv2d(self.n, self.n, kernel_size=(3, 3), stride=(1,1), padding=(1, 1), bias=False),
+                    nn.BatchNorm2d(self.n))
+            self.block4 = nn.Sequential(
+                    nn.Conv2d(self.n, 1, kernel_size=(7, 7), stride=(1, 1), padding=(3, 3), bias=False))
+                    
         self.fc = nn.Linear(nb_ft, self.n_classes)
-
         in_features = self.backbone.num_features
         print(f"{self.model_name}: {in_features}")
 
@@ -144,17 +150,17 @@ class ImageModel(nn.Module):
         x = self.fc(x)
         return x
 
-    def extract_feat(self, x):
-        batch_size = x.shape[0]
-        x = self.backbone(x)
+    # def extract_feat(self, x):
+    #     batch_size = x.shape[0]
+    #     x = self.backbone(x)
 
-        # if self.model_type != 'vit':
-        #     x = self.pooling(x).view(batch_size, -1)
-        x = self.dropout(x)
-        x = self.fc(x)
-        x = self.bn(x)
-        x = self.fc_(x)
-        return x
+    #     # if self.model_type != 'vit':
+    #     #     x = self.pooling(x).view(batch_size, -1)
+    #     x = self.dropout(x)
+    #     x = self.fc(x)
+    #     x = self.bn(x)
+    #     x = self.fc_(x)
+    #     return x
     
     def resize_img(self, x):
         res1 = F.interpolate(x, size=(self.output_size, self.output_size), mode='bilinear')

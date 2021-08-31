@@ -50,34 +50,15 @@ linear_params = {
 }
 
 oof_path = [
-    "tf_efficientnet_b2_tf_efficientnet_b2_oof.csv",
-    # "tf_efficientnet_b1_tf_efficientnet_b1_oof.csv",
-    # "tf_efficientnet_b0_ver2_tf_efficientnet_b0_oof.csv",
-    "efficientnetv2_rw_s_ver3_efficientnetv2_rw_s_oof.csv",
-    "tf_efficientnetv2_s_in21k_tf_efficientnetv2_s_in21k_oof.csv",
-    "vit_base_patch16_224_vit_base_patch16_224_oof.csv",#0.96
-    # "vit_base_resnet50d_224_ver2_vit_base_resnet50d_224_oof.csv", #0.93
-    # "skresnext50_32x4d_skresnext50_32x4d_oof.csv",#0.94
-    # "seresnext50_32x4d_seresnext50_32x4d_oof.csv",#0.935
-    # "tf_efficientnet_b2_ns_tf_efficientnet_b2_ns_oof.csv",#0.93
-    # "tf_efficientnet_b3_ns_tf_efficientnet_b3_ns_oof.csv", #0.92
-    # "inception_resnet_v2_inception_resnet_v2_oof.csv"#0.92
-
+    "tf_efficientnet_b7_ns_ver3_oof.csv",
+    "tf_efficientnet_b7_ns_ver4_oof.csv",
+    "tf_efficientnet_b7_ns_ver7_oof.csv",
 ]
 
 test_path = [
-    "tf_efficientnet_b2_tf_efficientnet_b2_test.csv",
-    # "tf_efficientnet_b1_tf_efficientnet_b1_test.csv",
-    # "tf_efficientnet_b0_ver2_tf_efficientnet_b0_test.csv",
-    "efficientnetv2_rw_s_ver3_efficientnetv2_rw_s_test.csv",
-    "tf_efficientnetv2_s_in21k_tf_efficientnetv2_s_in21k_test.csv",
-    "vit_base_patch16_224_vit_base_patch16_224_test.csv",#0.96
-    # "vit_base_resnet50d_224_ver2_vit_base_resnet50d_224_test.csv", #0.93
-    # "skresnext50_32x4d_skresnext50_32x4d_test.csv",#0.94
-    # "seresnext50_32x4d_seresnext50_32x4d_test.csv",#0.935
-    # "tf_efficientnet_b2_ns_tf_efficientnet_b2_ns_test.csv",#0.93
-    # "tf_efficientnet_b3_ns_tf_efficientnet_b3_ns_test.csv", #0.92
-    # "inception_resnet_v2_inception_resnet_v2_test.csv"#0.92
+    "tf_efficientnet_b7_ns_ver3.csv",
+    "tf_efficientnet_b7_ns_ver4.csv",
+    "tf_efficientnet_b7_ns_ver7.csv",
 ]
 
 data_path = "./data/output/"
