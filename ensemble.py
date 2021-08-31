@@ -91,7 +91,7 @@ class LightGBM():
         model = lgb.train(
             self.params,lgb_train, 
             valid_sets=lgb_valid,
-            num_boost_round=1000,
+            num_boost_round=10000,
             early_stopping_rounds=100
             )
         preds_val = model.predict(X_valid, num_iteration=model.best_iteration)
@@ -130,13 +130,6 @@ class meanWrapper():
         preds_test = np.mean(X_test, axis=1)
         return preds_val, preds_test
 
-class Identfy():
-    def __init__(self):
-        pass
-
-    def train_and_predict(self, X_train, X_valid, y_train, y_valid, X_test):
-        return np.array(y_valid), np.array(X_test)
-
 
 def load_oof_df(path):
     oof_df = pd.concat([pd.read_csv(data_path + p).drop(["label"], axis=1).rename(columns=lambda s: s + p) for p in path], axis=1)
@@ -148,7 +141,6 @@ def load_test_df(path):
     return test_df
 
 
-cols = ["0", "1"]
 def main():
     oof_df, oof_label = load_oof_df(oof_path)
     test_df = load_test_df(test_path)
@@ -178,7 +170,7 @@ def main():
             test_preds.append(y_pred_test)
             val_preds.append(y_pred_valid)
 
-            # print(f'y_valid,shape : {y_valid.shape}, y_pred_valid : {y_pred_valid.shape}')
+            print(f'y_valid,shape : {y_valid.shape}, y_pred_valid : {y_pred_valid.shape}')
             # print(f'X_valid[:5] : {X_valid[-50:-1]}, y_pred_valid[:5] : {y_pred_valid[-50:-1]}')
             # print(f'y_valid,label : {y_valid.value_counts("label")}, y_pred_valid.label : {np.argmax(y_pred_valid, axis=1).sum()}')
             # print(f'y_pred_valid.argmax : {np.argmax(y_pred_valid, axis=1)}')
