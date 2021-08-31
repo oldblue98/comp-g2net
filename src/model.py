@@ -207,7 +207,7 @@ def train_func(train_loader, model, device, criterion, optimizer, debug=True, sa
         images, targets = images.to(device, dtype=torch.float), targets.to(device, dtype=torch.float)
         #images, targets = images.cuda(), targets.cuda()
         if mixup:
-            images, targets_a, targets_b, lam = mixup_data(images, targets.view(-1, 1), device, use_cuda=True)
+            images, targets_a, targets_b, lam = mixup_data(images, targets.view(-1, 1), device)
             targets_a, targets_b = targets_a.to(device, dtype=torch.float), targets_a.to(device, dtype=torch.float)
 
         if debug and batch_idx == 100:
