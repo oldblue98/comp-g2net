@@ -65,7 +65,8 @@ def main():
         pseudo_df = pd.DataFrame()
         pseudo_df["label"] = df["target"]
         pseudo_df["image_path"] = image_paths
-        pseudo_df = pseudo_df[(pseudo_df.label > 0.9) | (pseudo_df.label < 0.1)].apply(lambda x: x.label > 0.5, axis=1)
+        pseudo_df = pseudo_df[(pseudo_df.label > 0.9) | (pseudo_df.label < 0.1)]
+        pseudo_df["label"] = pseudo_df.apply(lambda x: x.label > 0.5, axis=1)
         print(f"pseudo_df.shape : {pseudo_df.shape}, {pseudo_df.columns}")
 
         train_df = pd.concat([train_df, pseudo_df], axis=0).reset_index(drop=True)
