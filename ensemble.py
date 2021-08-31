@@ -153,7 +153,7 @@ def main():
     oof_df, oof_label = load_oof_df(oof_path)
     test_df = load_test_df(test_path)
 
-    folds = StratifiedKFold(n_splits=options["fold_num"], shuffle=True, random_state=options["seed"])
+    folds = StratifiedKFold(n_splits=options.fold_num, shuffle=True, random_state=options.seed)
     # folds = GroupKFold(n_splits=CFG['fold_num']).split(np.arange(train.shape[0]), groups=train.id.values)
 
     for metric in ["lgb", "logistic", "mean", "linear"]:
