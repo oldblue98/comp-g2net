@@ -6,9 +6,9 @@
     "optimizer": "Adam",
     "image_type":"spatial",
     "qtransform_params":{
-        "sr": 2048, "fmin": 20, "fmax": 500, "hop_length": 32, "bins_per_octave": 8
+        "sr": 2048, "fmin": 20, "fmax": 1024, "hop_length": 32, "bins_per_octave": 8
     },
-    "mixup":0,
+    "mixup":1,
     "learn_resize":0,
     "pseudo":"None",
     "img_size":256,
@@ -33,8 +33,8 @@
     "debug":0,
     "augmentation":{
         "resize":0,
-        "H_flip":0,
-        "V_flip":0,
+        "H_flip":1,
+        "V_flip":1,
         "Normalize":0
     },
     "CosineAnnealingWarmRestarts" : {

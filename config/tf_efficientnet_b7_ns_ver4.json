@@ -33,7 +33,9 @@
     "debug":0,
     "augmentation":{
         "resize":0,
-        "norm":1
+        "H_flip":0,
+        "V_flip":0,
+        "Normalize":0
     },
     "CosineAnnealingWarmRestarts" : {
         "T_0": 5,
