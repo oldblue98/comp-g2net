@@ -66,8 +66,10 @@ def main():
         pseudo_df["label"] = df["target"]
         pseudo_df["image_path"] = image_paths
         pseudo_df = pseudo_df[(pseudo_df.label > 0.9) | (pseudo_df.label < 0.1)]
+        print(f"pseudo_df.shape : {pseudo_df.shape}, {pseudo_df.columns}")
 
         train_df = pd.concat([train_df, pseudo_df], axis=0).reset_index(drop=True)
+    print(f"train_df.shape : {train_df.shape}, {train_df.columns}")
     # le = LabelEncoder()
     # train_df.label = le.fit_transform(train_df.label)
 
