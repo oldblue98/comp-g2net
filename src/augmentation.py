@@ -29,9 +29,9 @@ def get_train_transforms(config):
     trans_list = []
     if config["augmentation"]["resize"]:
         trans_list.append(Resize(config["img_size"], config["img_size"]))
-    if config["augmentation"]["H_Flip"]:
+    if config["augmentation"]["H_flip"]:
         trans_list.append(HorizontalFlip(p=0.5))
-    if config["augmentation"]["V_Flip"]:
+    if config["augmentation"]["V_flip"]:
         trans_list.append(VerticalFlip(p=0.5))
     if config["augmentation"]["Normalize"]:
         trans_list.append(
