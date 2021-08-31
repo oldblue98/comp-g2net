@@ -104,8 +104,8 @@ class LogisticWrapper():
     def train_and_predict(self, X_train, X_valid, y_train, y_valid, X_test):
         model = LogisticRegression()
         model.fit(X_train, y_train)
-        preds_val = model.predict_proba(X_valid)
-        preds_test = model.predict_proba(X_test)
+        preds_val = model.predict_proba(X_valid)[..., 1]
+        preds_test = model.predict_proba(X_test)[..., 1]
         return preds_val, preds_test
 
 class Linear():
@@ -202,7 +202,7 @@ def main():
         # 予測結果を保存
         sub = pd.read_csv("./data/input/sample_submission.csv")
         sub['label'] = test_preds
-        logger.debug(sub.value_counts("label"))
+        # logger.debug(sub.value_counts("label"))
         sub.to_csv(f'data/output/sub_ensemble_{ensemble_name}_{metric}.csv', index=False)
         oof_df.iloc[:, 0] = val_preds
         oof_df.to_csv(f'data/output/ensemble_{ensemble_name}_{metric}_oof.csv', index=False)
