@@ -110,12 +110,16 @@ def main():
             num_workers=config["num_workers"],
             shuffle=False,
             pin_memory=True,
-        )
 
+        )
+    
         model = ImageModel(
             config,
             device
         )
+        if config["load_dict"] != "None":
+            logger.debug(f"load_dict : {config['load_dict']}")
+            model.load_state_dict(torch.load(f'{config["load_dict"]}_fold{fold}_best_loss.pth'))
 
         model.eval()
         model = model.to(device)
