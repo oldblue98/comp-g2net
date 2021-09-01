@@ -11,6 +11,7 @@
     "mixup":1,
     "learn_resize":1,
     "pseudo":"None",
+    "load_dict":"None",
     "drop_rate":0.3,
     "drop_path_rate":0.2,
     "img_size":256,
