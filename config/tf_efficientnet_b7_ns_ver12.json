@@ -1,0 +1,62 @@
+{
+    "fold_num": 2,
+    "seed": 42,
+    "model_name": "tf_efficientnet_b7_ns",
+    "scheduler": "CosineAnnealingWarmRestarts",
+    "optimizer": "Adam",
+    "image_type":"spatial",
+    "qtransform_params":{
+        "sr": 2048, "fmin": 20, "fmax": 1024, "hop_length": 32, "bins_per_octave": 8
+    },
+    "mixup":1,
+    "learn_resize":1,
+    "pseudo":"None",
+    "drop_rate":0.3,
+    "drop_path_rate":0.2,
+    "img_size":256,
+    "epochs": 16,
+    "fc_dim": 512,
+    "n_classes":1,
+    "in_channels":1,
+    "train_bs": 48,
+    "valid_bs": 48,
+    "valid_every": 5,
+    "margin":0.5,
+    "scale":30,
+    "lr": 1e-4,
+    "weight_decay": 1e-6,
+    "num_workers": 4,
+    "verbose_step": 1,
+    "fold_id" : 0,
+    "tta": 2,
+    "monitor" : "val_loss",
+    "patience" : 2,
+    "mode" : "min",
+    "debug":0,
+    "augmentation":{
+        "resize":0,
+        "H_flip":1,
+        "V_flip":1,
+        "Normalize":0
+    },
+    "CosineAnnealingWarmRestarts" : {
+        "T_0": 5,
+        "T_mult": 1,
+        "eta_max": 1e-4,
+        "eta_min": 1e-6,
+        "T_up": 3,
+        "gamma": 0.7
+    },
+    "CosineAnnealingLR":{
+        "T_max":3,
+        "eta_min":1e-6
+    },
+    "schedular_params" : {
+        "lr_start": 1e-5,
+        "lr_max": 32e-5,
+        "lr_min": 1e-6,
+        "lr_ramp_ep": 5,
+        "lr_sus_ep": 0,
+        "lr_decay": 0.8
+    }
+}
