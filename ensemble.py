@@ -52,12 +52,16 @@ oof_path = [
     "tf_efficientnet_b7_ns_ver3_oof.csv",
     "tf_efficientnet_b7_ns_ver4_oof.csv",
     "tf_efficientnet_b7_ns_ver7_oof.csv",
+    "tf_efficientnet_b7_ns_ver9_oof.csv",
+    "tf_efficientnet_b7_ns_ver10_oof.csv"
 ]
 
 test_path = [
     "tf_efficientnet_b7_ns_ver3.csv",
     "tf_efficientnet_b7_ns_ver4.csv",
     "tf_efficientnet_b7_ns_ver7.csv",
+    "tf_efficientnet_b7_ns_ver9.csv",
+    "tf_efficientnet_b7_ns_ver10.csv"
 ]
 
 data_path = "./data/output/"
