@@ -9,7 +9,7 @@
         "sr": 2048, "fmin": 20, "fmax": 1024, "hop_length": 32, "bins_per_octave": 8
     },
     "mixup":0,
-    "learn_resize":1,
+    "learn_resize":0,
     "apex":1,
     "max_grad_norm":1000,
     "pseudo":"None",
@@ -37,7 +37,7 @@
     "mode" : "min",
     "debug":0,
     "augmentation":{
-        "resize":0,
+        "resize":1,
         "H_flip":1,
         "V_flip":1,
         "Normalize":0
