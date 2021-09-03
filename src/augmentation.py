@@ -28,7 +28,10 @@ def get_inference_transforms(image_size):
 def get_train_transforms(config):
     trans_list = []
     if config["augmentation"]["resize"]:
-        trans_list.append(Resize(config["img_size"], config["img_size"]))
+        if config["learn_resize"]:
+            trans_list.append(Resize(config["img_size"] * 2, config["img_size"] * 2))
+        else:
+            trans_list.append(Resize(config["img_size"], config["img_size"]))
     if config["augmentation"]["H_flip"]:
         trans_list.append(HorizontalFlip(p=0.5))
     if config["augmentation"]["V_flip"]:
