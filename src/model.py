@@ -203,50 +203,67 @@ def mixup_data(x, y, device, alpha=1.0):
 def mixup_criterion(criterion, pred, y_a, y_b, lam):
     return lam * criterion(pred, y_a) + (1 - lam) * criterion(pred, y_b)
 
-def train_func(train_loader, model, device, criterion, optimizer, debug=True, sam=False, mixup=False):
+def train_func(train_loader, model, device, criterion, optimizer, config):
     model.train()
     bar = tqdm(train_loader)
-
-
+    if config["apex"]:
+        scaler = GradScaler()
     losses = []
     for batch_idx, (images, targets) in enumerate(bar):
         images, targets = images.to(device, dtype=torch.float), targets.to(device, dtype=torch.float)
         #images, targets = images.cuda(), targets.cuda()
-        if mixup:
+        if config["mixup"]:
             images, targets_a, targets_b, lam = mixup_data(images, targets.view(-1, 1), device)
             targets_a, targets_b = targets_a.to(device, dtype=torch.float), targets_a.to(device, dtype=torch.float)
 
-        if debug and batch_idx == 100:
+        if config["debug"] and batch_idx == 100:
             print('Debug Mode. Only train on first 100 batches.')
             break
 
         # SAM
-        if sam:
+        if config["optimizer"] == "SAM":
             logits = model(images)
             # targets = targets.view(-1, 1)
-            if mixup:
+            if config["mixup"]:
                 loss = mixup_criterion(criterion, logits, targets_a, targets_b, lam)
             else:
                 loss = criterion(logits, targets.view(-1, 1))
             loss.backward()
             optimizer.first_step(zero_grad=True)
             logits = model(images)
-            if mixup:
+            if config["mixup"]:
                 loss = mixup_criterion(criterion, logits, targets_a, targets_b, lam)
             else:
                 loss = criterion(logits, targets.view(-1, 1))
             loss.backward()
             optimizer.second_step(zero_grad=True)
         else:
-            logits = model(images)
-            if mixup:
-                loss = mixup_criterion(criterion, logits, targets_a, targets_b, lam)
+            if config.apex:
+                with autocast():
+                    logits = model(images)
+                    if config["mixup"]:
+                        loss = mixup_criterion(criterion, logits, targets_a, targets_b, lam)
+                    else:
+                        loss = criterion(logits, targets.view(-1, 1))
             else:
-                loss = criterion(logits, targets.view(-1, 1))
-            loss.backward()
-            optimizer.step()
-            optimizer.zero_grad()
+                logits = model(images)
+                if config["mixup"]:
+                    loss = mixup_criterion(criterion, logits, targets_a, targets_b, lam)
+                else:
+                    loss = criterion(logits, targets.view(-1, 1))
+            
+            if config["apex"]:
+                scaler.scale(loss).backward()
+            else:
+                loss.backward()
+            grad_norm = torch.nn.utils.clip_grad_norm_(model.parameters(), config["max_grad_norm"])
 
+            if config["apex"]:
+                scaler.step(optimizer)
+                scaler.update()
+            else:
+                optimizer.step()
+            optimizer.zero_grad()
 
         losses.append(loss.item())
         smooth_loss = np.mean(losses[-30:])
@@ -256,7 +273,7 @@ def train_func(train_loader, model, device, criterion, optimizer, debug=True, sa
     loss_train = np.mean(losses)
     return loss_train
 
-def valid_func(train_loader, model, device, criterion, debug=True):
+def valid_func(train_loader, model, device, criterion, config):
     model.eval()
     bar = tqdm(train_loader)
 
@@ -267,7 +284,7 @@ def valid_func(train_loader, model, device, criterion, debug=True):
         for batch_idx, (images, targets) in enumerate(bar):
             images, targets = images.to(device, dtype=torch.float), targets.to(device, dtype=torch.float)
             #images, targets = images.cuda(), targets.cuda()
-            if debug and batch_idx == 100:
+            if config["debug"] and batch_idx == 100:
                 print('Debug Mode. Only train on first 100 batches.')
                 break
 
