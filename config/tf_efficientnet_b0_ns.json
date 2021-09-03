@@ -8,8 +8,8 @@
     "qtransform_params":{
         "sr": 2048, "fmin": 20, "fmax": 1024, "hop_length": 32, "bins_per_octave": 8
     },
-    "mixup":1,
-    "learn_resize":0,
+    "mixup":0,
+    "learn_resize":1,
     "apex":1,
     "max_grad_norm":1000,
     "pseudo":"None",
