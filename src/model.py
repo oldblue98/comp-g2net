@@ -238,7 +238,7 @@ def train_func(train_loader, model, device, criterion, optimizer, config):
             loss.backward()
             optimizer.second_step(zero_grad=True)
         else:
-            if config.apex:
+            if config["apex"]:
                 with autocast():
                     logits = model(images)
                     if config["mixup"]:
