@@ -85,15 +85,19 @@ def get_valid_transforms(config):
 
 def get_inference_transforms(config):
     trans_list = []
-    if config.augmentation["resize"]:
-        trans_list.append(Resize(config.img_size, config.img_size))
-    if config.augmentation["H_flip"]:
+    if config["augmentation"]["resize"]:
+        if config["learn_resize"]:
+            trans_list.append(Resize(config["img_size"] * 2, config["img_size"] * 2))
+        else:
+            trans_list.append(Resize(config["img_size"], config["img_size"]))
+    if config["augmentation"]["H_flip"]:
         trans_list.append(HorizontalFlip(p=0.5))
-    if config.augmentation["V_flip"]:
+    if config["augmentation"]["V_flip"]:
         trans_list.append(VerticalFlip(p=0.5))
-    if config.augmentation["Normalize"]:
+    if config["augmentation"]["Normalize"]:
         trans_list.append(
-            Normalize(mean=[0.485, 0.456, 0.406],std=[0.229, 0.224, 0.225])
+            Normalize(mean=[0.485],std=[0.229])
         )
     trans_list.append(ToTensorV2(p=1.0))
+
     return Compose(trans_list, p=1.)
