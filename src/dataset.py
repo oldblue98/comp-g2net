@@ -2,6 +2,8 @@ import sys
 sys.path.append('nnAudio/')
 
 import numpy as np
+from scipy import signal
+
 import torch
 from torch.utils.data import Dataset
 from torch.fft import fft, rfft, ifft
@@ -29,6 +31,8 @@ class ImageDataset(Dataset):
         target = self.labels[index]
 
         signal = np.load(image_path)
+        for j in range(len(signal)):
+            signal[j] = self.bandpass(signal[j], 2048)
         if self.whiten:
             signal = self.whiten(signal)
         image = self.apply_qtransform(signal, self.image_type)
@@ -61,3 +65,8 @@ class ImageDataset(Dataset):
         mag = torch.sqrt(torch.real(spec*torch.conj(spec))) 
 
         return torch.real(ifft(spec/mag)).numpy() * np.sqrt(len(signal)/2)
+
+    def bandpass(self, x, fs, fmin=20, fmax=500):
+        b, a = signal.butter(8, (fmin, fmax), btype="bandpass", fs=fs)            #フィルタ伝達関数の分子と分母を計算
+        y = signal.filtfilt(b, a, x)                  #信号に対してフィルタをかける
+        return np.array(y)
