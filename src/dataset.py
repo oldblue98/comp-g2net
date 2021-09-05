@@ -15,7 +15,7 @@ from nnAudio.Spectrogram import CQT1992v2
 
 
 class ImageDataset(Dataset):
-    def __init__(self, train_df, qtransform, transforms=None, image_type="spatial", whiten=True):
+    def __init__(self, train_df, qtransform, transforms=None, image_type="spatial", whiten=False):
 
         self.image_paths = train_df["image_path"].values
         self.labels = train_df["label"].values
