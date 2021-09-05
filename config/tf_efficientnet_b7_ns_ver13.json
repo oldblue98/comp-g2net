@@ -1,7 +1,7 @@
 {
     "fold_num": 2,
     "seed": 42,
-    "model_name": "dm_nfnet_f1",
+    "model_name": "tf_efficientnet_b7_ns",
     "scheduler": "CosineAnnealingWarmRestarts",
     "optimizer": "Adam",
     "image_type":"spatial",
