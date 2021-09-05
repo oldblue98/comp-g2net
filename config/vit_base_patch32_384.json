@@ -14,8 +14,8 @@
     "max_grad_norm":1000,
     "pseudo":"None",
     "load_dict":"None",
-    "drop_rate":0.3,
-    "drop_path_rate":0.2,
+    "drop_rate":0,
+    "drop_path_rate":0,
     "img_size":384,
     "epochs": 8,
     "fc_dim": 512,
@@ -37,7 +37,7 @@
     "mode" : "min",
     "debug":0,
     "augmentation":{
-        "resize":0,
+        "resize":1,
         "H_flip":0,
         "V_flip":0,
         "Normalize":1
