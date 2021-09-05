@@ -15,13 +15,14 @@ from nnAudio.Spectrogram import CQT1992v2
 
 
 class ImageDataset(Dataset):
-    def __init__(self, train_df, qtransform, transforms=None, image_type="spatial", whiten=False):
+    def __init__(self, train_df, qtransform, transforms=None, image_type="spatial", use_whiten=False):
 
         self.image_paths = train_df["image_path"].values
         self.labels = train_df["label"].values
         self.augmentations = transforms
         self.image_type = image_type
         self.transform = CQT1992v2(**qtransform)
+        self.use_whiten = use_whiten
 
     def __len__(self):
         return len(self.image_paths)
@@ -33,7 +34,7 @@ class ImageDataset(Dataset):
         signal = np.load(image_path)
         for j in range(len(signal)):
             signal[j] = self.bandpass(signal[j], 2048)
-        if self.whiten:
+        if self.use_whiten:
             signal = self.whiten(signal)
         image = self.apply_qtransform(signal, self.image_type)
         # print("before",image.shape)
