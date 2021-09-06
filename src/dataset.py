@@ -36,28 +36,26 @@ class ImageDataset(Dataset):
             signal[j] = self.bandpass(signal[j], 2048)
         if self.use_whiten:
             signal = self.whiten(signal)
-        image = self.apply_qtransform(signal, self.image_type)
-        # print("before",image.shape)
-        # image = cv2.resize(image, (image.shape[0]//2, image.shape[0]//2))
+
+        if self.image_type == "spatial":
+            image = np.concatenate([self.apply_qtransform(signal[j]) for j in range(len(signal))], axis=2)
+            image = image.transpose(1, 2, 0)
+        elif self.image_type == "channel":
+            image = np.concatenate([self.apply_qtransform(signal[j]) for j in range(len(signal))], axis=0)
+            image = image.transpose(1, 2, 0)
+        else:
+            raise Exception("image_type is not defined")
+
         if self.augmentations:
             augmented = self.augmentations(image=image)
             image = augmented['image']
         # print("after",image.shape)
-        return image, torch.tensor(target)
+        return torch.tensor(image), torch.tensor(target)
 
-    def apply_qtransform(self, waves, image_type):
+    def apply_qtransform(self, waves):
         transform = self.transform
-        if image_type == "spatial":
-            waves = np.hstack(waves)
-            waves = waves / np.max(waves)
-            waves = torch.from_numpy(waves).float()
-            image = transform(waves)
-            image = image.squeeze().numpy()
-        elif image_type == "channel":
-            image = np.concatenate([transform(torch.from_numpy(waves[i]/np.max(waves)).float()) for i in range(len(waves))], axis=0)
-            image = image.transpose(1, 2, 0)
-        else:
-            raise Exception("image_type is not defined")
+        waves = torch.from_numpy(waves).float()
+        image = transform(waves)
         return image
 
     def whiten(self, signal):

@@ -38,7 +38,7 @@ def get_train_transforms(config):
         trans_list.append(VerticalFlip(p=0.5))
     if config["augmentation"]["Normalize"]:
         trans_list.append(
-            Normalize(mean=[0.485],std=[0.229])
+            Normalize(mean=[0.485]*config["in_channels"], std=[0.229]*config["in_channels"])
         )
     trans_list.append(ToTensorV2(p=1.0))
 
@@ -77,7 +77,7 @@ def get_valid_transforms(config):
         trans_list.append(Resize(config["img_size"], config["img_size"]))
     if config["augmentation"]["Normalize"]:
         trans_list.append(
-            Normalize(mean=[0.485],std=[0.229])
+            Normalize(mean=[0.485]*config["in_channels"], std=[0.229]*config["in_channels"])
         )
     trans_list.append(ToTensorV2(p=1.0))
 
@@ -96,7 +96,7 @@ def get_inference_transforms(config):
         trans_list.append(VerticalFlip(p=0.5))
     if config["augmentation"]["Normalize"]:
         trans_list.append(
-            Normalize(mean=[0.485],std=[0.229])
+            Normalize(mean=[0.485]*config["in_channels"], std=[0.229]*config["in_channels"])
         )
     trans_list.append(ToTensorV2(p=1.0))
 
