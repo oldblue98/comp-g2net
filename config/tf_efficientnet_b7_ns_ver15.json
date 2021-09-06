@@ -20,7 +20,7 @@
     "epochs": 12,
     "fc_dim": 512,
     "n_classes":1,
-    "in_channels":3,
+    "in_channels":1,
     "train_bs": 48,
     "valid_bs": 48,
     "valid_every": 5,
