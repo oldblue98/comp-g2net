@@ -37,7 +37,7 @@
     "mode" : "min",
     "debug":0,
     "augmentation":{
-        "resize":1,
+        "resize":0,
         "H_flip":0,
         "V_flip":0,
         "Normalize":1
