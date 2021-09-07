@@ -40,7 +40,7 @@
         "resize":0,
         "H_flip":0,
         "V_flip":0,
-        "Normalize":1
+        "Normalize":0
     },
     "CosineAnnealingWarmRestarts" : {
         "T_0": 12,
