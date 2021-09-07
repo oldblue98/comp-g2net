@@ -38,10 +38,10 @@ class ImageDataset(Dataset):
             signal = self.whiten(signal)
 
         if self.image_type == "spatial":
-            image = np.concatenate([self.apply_qtransform(signal[j]) for j in range(len(signal))], axis=2)
+            image = torch.cat([self.apply_qtransform(signal[j]) for j in range(len(signal))], dim=2)
             image = image.transpose(1, 2, 0)
         elif self.image_type == "channel":
-            image = np.concatenate([self.apply_qtransform(signal[j]) for j in range(len(signal))], axis=0)
+            image = torch.cat([self.apply_qtransform(signal[j]) for j in range(len(signal))], dim=0)
             image = image.transpose(1, 2, 0)
         else:
             raise Exception("image_type is not defined")
@@ -50,12 +50,11 @@ class ImageDataset(Dataset):
             augmented = self.augmentations(image=image)
             image = augmented['image']
         # print("after",image.shape)
-        return torch.tensor(image), torch.tensor(target)
+        return image, torch.tensor(target)
 
     def apply_qtransform(self, waves):
-        transform = self.transform
         waves = torch.from_numpy(waves).float()
-        image = transform(waves)
+        image = self.transform(waves)
         return image
 
     def whiten(self, signal):
