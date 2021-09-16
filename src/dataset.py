@@ -32,8 +32,8 @@ class ImageDataset(Dataset):
         target = self.labels[index]
 
         signal = np.load(image_path)
-        for j in range(len(signal)):
-            signal[j] = self.bandpass(signal[j], 2048)
+        # for j in range(len(signal)):
+        #     signal[j] = self.bandpass(signal[j], 2048)
         if self.use_whiten:
             signal = self.whiten(signal)
 
