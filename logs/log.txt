@@ -45,3 +45,11 @@ adam
 spatial
 fold:5
 cv:
+
+b7ns ver3
+bins_per_octave : 8
+
+b7ns ver4
+bins_per_octave : 24
+
+ver4のほうが少し精度下がる+時間がかかる
